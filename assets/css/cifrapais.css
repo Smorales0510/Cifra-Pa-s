@@ -1,0 +1,1434 @@
+/* ===========================================================================
+   CIFRA PAÍS · Sitio institucional
+   Sistema visual del Manual de Identidad Corporativa v2.0 (julio 2026)
+     §03 paleta · §04 tipografía y escala · §09 reglas de tablero · §10 web
+
+   Reglas duras heredadas del manual, que no deben tocarse sin revisarlo:
+     · cero border-radius, cero sombras, cero degradados;
+     · el Amarillo Cifra (#E8A317) marca el valor destacado o el botón
+       principal — nunca una categoría más;
+     · el Rojo Tierra (#B5432F) es solo alerta y no comparte pieza con el
+       amarillo como categoría;
+     · ninguna familia tipográfica fuera de la cadena Helvetica y de
+       Courier Prime para metadatos.
+
+   Se escribe CSS a mano y no un framework de utilidades porque el manual
+   define su propia escala tipográfica y su propio sistema de color: un
+   framework obligaría a reconfigurarlo entero y dejaría clases que lo
+   contradicen al alcance de cualquiera que edite el HTML.
+   =========================================================================== */
+
+/* ── Tokens ─────────────────────────────────────────────────────────────── */
+:root{
+  /* Paleta corporativa (§03) */
+  --registro:#113A5E;   /* Azul Registro   · 11,44:1 */
+  --consulta:#2E6E9E;   /* Azul Consulta   ·  5,33:1 */
+  --cifra:#E8A317;      /* Amarillo Cifra  · solo relleno */
+  --ambar:#9A6410;      /* Ámbar Texto     ·  4,87:1 — versión legible del acento */
+  --tierra:#B5432F;     /* Rojo Tierra     ·  5,38:1 — alerta */
+  --acero:#61707F;      /* texto secundario y notas al pie */
+  --grafito:#22262B;    /* tinta de cuerpo */
+  --niebla:#F0F3F6;     /* fondo alterno */
+  --papel:#FCFCFD;      /* fondo base */
+
+  /* Derivados de uso interno */
+  --linea:#D8DFE6;               /* hairline sobre claro */
+  --linea-oscura:#2A5580;        /* hairline sobre Azul Registro */
+  --claro-suave:#C2D6E6;         /* texto secundario sobre oscuro */
+  --azul-profundo:#0C2C48;       /* fondo de tablero, un paso bajo el registro */
+
+  /* Tipografía (§04). No se descarga la familia de titulares: la cadena
+     autorizada resuelve en Helvetica Neue, Helvetica, Nimbus Sans, Inter
+     o Arial, que son métricamente equivalentes. */
+  --texto:"Helvetica Neue",Helvetica,"Nimbus Sans",Inter,Arial,sans-serif;
+  --mono:"Courier Prime","Courier New",Consolas,monospace;
+
+  /* Escala tipográfica, traducida de pt a rem manteniendo las proporciones */
+  --t-eslogan:clamp(2.75rem,7vw,4.75rem);
+  --t-capitulo:clamp(1.75rem,3.4vw,2.5rem);
+  --t-subtitulo:1.1875rem;
+  --t-entradilla:clamp(1.0625rem,1.5vw,1.1875rem);
+  --t-cuerpo:1rem;
+  --t-antetitulo:0.6875rem;
+  --t-kpi:clamp(2rem,4vw,2.75rem);
+  --t-meta:0.75rem;
+
+  /* Ritmo vertical */
+  --aire-seccion:clamp(4.5rem,9vw,7.5rem);
+  --ancho:1240px;
+  --gotera:clamp(1.25rem,4vw,2.5rem);
+}
+
+/* ── Base ───────────────────────────────────────────────────────────────── */
+*,*::before,*::after{box-sizing:border-box}
+
+html{
+  -webkit-text-size-adjust:100%;
+  scroll-behavior:smooth;
+  /* la barra superior es fija: el ancla no debe quedar debajo */
+  scroll-padding-top:5.5rem;
+  /* El sitio es de tinta sobre papel y no tiene modo oscuro. Declararlo evita
+     que el navegador repinte por su cuenta los <select> y los controles. */
+  color-scheme:light;
+}
+
+body{
+  margin:0;
+  background:var(--papel);
+  color:var(--grafito);
+  font-family:var(--texto);
+  font-size:var(--t-cuerpo);
+  line-height:1.55;
+  -webkit-font-smoothing:antialiased;
+}
+
+h1,h2,h3,p,dl,dd,figure,blockquote{margin:0}
+ul,ol{margin:0;padding:0;list-style:none}
+img,svg{max-width:100%}
+
+a{color:var(--consulta);text-decoration:underline;text-underline-offset:0.18em}
+a:hover{color:var(--registro)}
+
+/* Táctil: se descarta el retardo de 300 ms al tocar y el destello gris del
+   navegador, que aparece con un radio que este sistema no usa. */
+a,button,summary,label,[role="button"]{
+  touch-action:manipulation;
+  -webkit-tap-highlight-color:rgba(17,58,94,.12);
+}
+
+/* Foco visible en todo elemento operable (requisito de accesibilidad). */
+:focus-visible{
+  outline:2px solid var(--cifra);
+  outline-offset:2px;
+}
+
+/* La gotera respeta el área segura: en iPhone apaisado el notch se come el
+   borde izquierdo o derecho de todo bloque a sangre. */
+.contenedor{
+  width:100%;
+  max-width:var(--ancho);
+  margin-inline:auto;
+  padding-left:max(var(--gotera),env(safe-area-inset-left));
+  padding-right:max(var(--gotera),env(safe-area-inset-right));
+}
+
+.visualmente-oculto{
+  position:absolute;width:1px;height:1px;overflow:hidden;
+  clip-path:inset(50%);white-space:nowrap;
+}
+
+.saltar{
+  position:absolute;left:-9999px;top:0;z-index:100;
+  background:var(--cifra);color:var(--registro);
+  padding:0.75rem 1.25rem;font-weight:700;text-decoration:none;
+}
+.saltar:focus{left:0}
+
+/* <main tabindex="-1"> recibe el foco desde el salto al contenido; el anillo
+   sobraría porque no es un control. */
+main:focus{outline:none}
+
+/* ── Piezas tipográficas compartidas ────────────────────────────────────── */
+
+/* Antetítulo: Neue Bold caps, tracking +26% (§04). Es el marcador estructural
+   de todo el sitio; cada sección lleva el suyo y ninguno decora. */
+.antetitulo{
+  font-size:var(--t-antetitulo);
+  font-weight:700;
+  letter-spacing:0.26em;
+  text-transform:uppercase;
+  color:var(--acero);
+  margin:0 0 1rem;
+}
+.antetitulo--claro{color:var(--claro-suave)}
+
+/* Fuente del dato: Courier Prime, obligatoria bajo toda figura y todo tablero.
+   Es el elemento que se repite en cada sección y da su textura al sitio. */
+.fuente{
+  font-family:var(--mono);
+  font-size:var(--t-meta);
+  line-height:1.5;
+  color:var(--acero);
+  /* Cifras de ancho fijo: en una columna de fechas de corte y errores
+     estándar, los dígitos tienen que caer alineados. */
+  font-variant-numeric:tabular-nums;
+  margin:0;
+}
+.fuente--clara{color:var(--claro-suave)}
+
+.lista-marcada li,
+.lista-tachada li{
+  position:relative;
+  padding-left:1.25rem;
+  margin-bottom:0.5rem;
+  font-size:0.9375rem;
+}
+.lista-marcada li::before{
+  content:"";
+  position:absolute;left:0;top:0.6em;
+  width:8px;height:2px;background:var(--consulta);
+}
+.lista-marcada--suelta li{margin-bottom:0.875rem;font-size:1rem}
+.lista-tachada li::before{
+  content:"✕";
+  position:absolute;left:0;top:0;
+  color:var(--tierra);font-size:0.8125rem;font-weight:700;
+}
+
+/* ── Botones ────────────────────────────────────────────────────────────── */
+.botonera{display:flex;flex-wrap:wrap;gap:0.75rem;margin-top:2rem}
+
+.boton{
+  display:inline-block;
+  padding:0.875rem 1.75rem;
+  font-family:var(--texto);
+  font-size:0.875rem;
+  font-weight:700;
+  letter-spacing:0.04em;
+  text-decoration:none;
+  text-align:center;
+  border:1px solid transparent;
+  cursor:pointer;
+  transition:background-color .15s linear,color .15s linear,border-color .15s linear;
+}
+
+/* §10: en la web, el acento es el botón principal. Uno solo por pantalla. */
+.boton--acento{background:var(--cifra);color:var(--registro);border-color:var(--cifra)}
+.boton--acento:hover{background:#F0B840;color:var(--registro);border-color:#F0B840}
+
+.boton--fantasma{background:transparent;color:#FFF;border-color:rgba(255,255,255,.45)}
+.boton--fantasma:hover{background:rgba(255,255,255,.1);color:#FFF;border-color:#FFF}
+
+.boton--fantasma-claro{background:transparent;color:var(--claro-suave);border-color:var(--linea-oscura)}
+.boton--fantasma-claro:hover{background:rgba(255,255,255,.08);color:#FFF;border-color:var(--claro-suave)}
+
+.boton--bloque{display:block;width:100%}
+.boton--menudo{padding:0.5rem 1rem;font-size:var(--t-meta);letter-spacing:0.06em}
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   BARRA SUPERIOR
+   ═══════════════════════════════════════════════════════════════════════ */
+.barra{
+  position:sticky;top:0;z-index:50;
+  background:var(--registro);
+  border-bottom:1px solid var(--linea-oscura);
+}
+.barra__caja{
+  display:flex;align-items:center;justify-content:space-between;
+  gap:1.5rem;min-height:4.5rem;
+}
+
+.marca{display:flex;align-items:center;gap:0.875rem;text-decoration:none;min-width:0}
+.marca__simbolo{width:34px;height:34px;flex-shrink:0}
+/* min-width:0 para que el descriptor, que es largo y va con tracking, pueda
+   encogerse en vez de empujar la barra fuera de la pantalla. */
+.marca__texto{display:flex;flex-direction:column;line-height:1.1;min-width:0}
+.marca__nombre{
+  color:#FFF;font-weight:700;font-size:1.0625rem;
+  letter-spacing:-0.008em;text-transform:uppercase;
+}
+/* El descriptor se compone con tracking hasta igualar el ancho del logotipo
+   (§02): no es una línea suelta, es el borde inferior del bloque. */
+.marca__descriptor{
+  color:var(--claro-suave);
+  font-size:0.5rem;font-weight:300;
+  letter-spacing:0.148em;text-transform:uppercase;
+  margin-top:0.25rem;
+  white-space:nowrap;overflow:hidden;text-overflow:ellipsis;
+}
+/* Bajo 380 px el descriptor no cabe entero; antes de recortarlo a la mitad,
+   se suprime: el manual permite el logotipo sin descriptor, no un descriptor
+   trunco. */
+@media (max-width:380px){
+  .marca__descriptor{display:none}
+}
+
+.nav__lista{display:flex;align-items:center;gap:0.25rem}
+.nav__enlace{
+  display:block;padding:0.5rem 0.875rem;
+  color:var(--claro-suave);
+  font-size:0.875rem;font-weight:500;
+  text-decoration:none;
+  border-bottom:2px solid transparent;
+}
+.nav__enlace:hover,
+.nav__enlace[aria-current="true"]{color:#FFF;border-bottom-color:var(--cifra)}
+.nav__enlace--acento{color:#FFF}
+
+.hamburguesa{
+  display:none;
+  width:2.75rem;height:2.75rem;
+  background:transparent;border:1px solid var(--linea-oscura);
+  cursor:pointer;
+  align-items:center;justify-content:center;
+}
+.hamburguesa__trazos,
+.hamburguesa__trazos::before,
+.hamburguesa__trazos::after{
+  display:block;width:18px;height:2px;background:#FFF;content:"";
+}
+.hamburguesa__trazos{position:relative}
+.hamburguesa__trazos::before{position:absolute;top:-6px}
+.hamburguesa__trazos::after{position:absolute;top:6px}
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   01 · PORTADA
+   ═══════════════════════════════════════════════════════════════════════ */
+.portada{
+  background:var(--registro);
+  color:#FFF;
+  padding-top:clamp(3.5rem,7vw,6rem);
+  /* la banda de indicadores sobresale por abajo: el relleno inferior es la
+     mitad de su alto para que quede a caballo entre el oscuro y el papel */
+  padding-bottom:0;
+}
+
+.portada__reja{
+  display:grid;
+  grid-template-columns:minmax(0,1fr);
+  gap:clamp(2.5rem,5vw,4rem);
+  padding-bottom:clamp(3rem,6vw,4.5rem);
+}
+@media (min-width:900px){
+  .portada__reja{grid-template-columns:minmax(0,1.05fr) minmax(0,1fr);align-items:center}
+}
+
+.portada__eslogan{
+  font-size:var(--t-eslogan);
+  font-weight:700;
+  letter-spacing:-0.01em;      /* eslogan: Neue Bold, tracking −1% (§04) */
+  line-height:0.95;
+  margin:0 0 1.5rem;
+}
+.portada__entradilla{
+  font-size:var(--t-entradilla);
+  font-weight:300;
+  line-height:1.55;
+  color:#DCE6EF;
+  max-width:36em;
+}
+
+/* Figura de portada */
+.portada__figura{
+  border:1px solid var(--linea-oscura);
+  background:var(--azul-profundo);
+  padding:clamp(1.25rem,2.5vw,1.75rem);
+}
+.figura__cabeza{margin-bottom:1.25rem}
+.figura__cabeza .antetitulo{margin-bottom:0.375rem}
+.figura__titulo{
+  display:block;
+  font-size:var(--t-subtitulo);
+  font-weight:500;
+  color:#FFF;
+}
+
+.serie{display:block;width:100%;height:auto;margin-bottom:1rem}
+.serie__reticula line{stroke:#1E4970;stroke-width:1}
+.serie__ejes text{
+  fill:var(--claro-suave);
+  font-family:var(--texto);
+  font-size:10px;
+  font-variant-numeric:tabular-nums;
+}
+.serie__linea{
+  stroke:var(--cifra);
+  stroke-width:3;                /* líneas a 3 px, sin marcadores (§09) */
+  stroke-linejoin:round;
+  stroke-linecap:round;
+}
+.serie__punto{fill:var(--cifra)}
+.serie__valor{
+  fill:#FFF;font-family:var(--texto);
+  font-size:15px;font-weight:700;
+}
+
+/* Dibujo del trazo al cargar: un solo gesto, no una animación por elemento. */
+@media (prefers-reduced-motion:no-preference){
+  .serie__linea{
+    stroke-dasharray:1400;
+    stroke-dashoffset:1400;
+    animation:trazar 1.6s cubic-bezier(.22,.61,.36,1) .25s forwards;
+  }
+  .serie__punto,.serie__valor{opacity:0;animation:aparecer .4s linear 1.7s forwards}
+}
+@keyframes trazar{to{stroke-dashoffset:0}}
+@keyframes aparecer{to{opacity:1}}
+
+/* Banda de indicadores — el elemento firma del sitio.
+   Queda montada exactamente sobre el borde entre la portada oscura y el
+   papel: es la ficha técnica de la portada y el encabezado del resto de la
+   página a la vez. La franja resuelve el corte con dos bloques planos, no
+   con un degradado. */
+.franja{position:relative;background:var(--papel)}
+.franja::before{
+  content:"";position:absolute;
+  top:0;left:0;right:0;bottom:50%;
+  background:var(--registro);
+}
+.franja > .contenedor{position:relative}
+
+.banda{
+  display:grid;
+  grid-template-columns:minmax(0,1fr);
+  gap:1px;
+  background:var(--linea);
+  border:1px solid var(--linea);
+}
+@media (min-width:760px){
+  .banda{grid-template-columns:auto minmax(0,1fr)}
+}
+
+.banda__rotulo{
+  font-family:var(--mono);
+  font-size:var(--t-meta);
+  line-height:1.4;
+  color:#FFF;
+  background:var(--consulta);
+  padding:1.25rem;
+  display:flex;align-items:center;
+  text-transform:uppercase;
+  letter-spacing:0.05em;
+}
+
+.banda__reja{
+  display:grid;
+  grid-template-columns:repeat(2,minmax(0,1fr));
+  gap:1px;
+  background:var(--linea);
+  margin:0;
+}
+@media (min-width:760px){
+  .banda__reja{grid-template-columns:repeat(4,minmax(0,1fr))}
+}
+
+.kpi{
+  background:var(--papel);
+  padding:1.25rem clamp(1rem,2vw,1.5rem) 1.375rem;
+}
+.kpi__etiqueta{
+  font-size:var(--t-antetitulo);
+  font-weight:700;letter-spacing:0.13em;text-transform:uppercase;
+  color:var(--acero);
+  margin-bottom:0.375rem;
+}
+.kpi__valor{
+  font-size:var(--t-kpi);
+  font-weight:700;
+  line-height:1;
+  letter-spacing:-0.02em;
+  color:var(--registro);
+  font-variant-numeric:tabular-nums;
+  margin:0;
+}
+/* El acento marca el valor destacado, nunca una categoría más (§09).
+   Sobre papel el valor va en Ámbar Texto (4,87:1); el filo lateral sí puede
+   ir en Amarillo Cifra, que es color de relleno y no de texto. */
+.kpi--destacado{border-left:3px solid var(--cifra)}
+.kpi--destacado .kpi__valor{color:var(--ambar)}
+.kpi__nota{
+  font-family:var(--mono);
+  font-size:var(--t-meta);
+  color:var(--acero);
+  margin:0.375rem 0 0;
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   SECCIONES
+   ═══════════════════════════════════════════════════════════════════════ */
+.seccion{padding-block:var(--aire-seccion)}
+.seccion--niebla{background:var(--niebla)}
+.seccion--oscura{background:var(--registro);color:#FFF}
+
+.seccion__cabeza{max-width:44rem;margin-bottom:clamp(2.5rem,5vw,3.5rem)}
+.seccion__cabeza--ancha{max-width:52rem}
+
+/* text-wrap:balance reparte las líneas del titular en vez de dejar una
+   palabra suelta abajo. Solo en titulares: en párrafos largos el navegador
+   lo ignora y en tablas encarece el reflow. */
+h1,h2,h3,.seccion__titulo,.tarjeta__titulo,.paper__titulo,.panel__titulo,.cita{
+  text-wrap:balance;
+}
+
+.seccion__titulo{
+  font-size:var(--t-capitulo);
+  font-weight:700;
+  letter-spacing:-0.015em;
+  line-height:1.12;
+  color:var(--registro);
+  margin:0 0 1rem;
+}
+.seccion__titulo--claro{color:#FFF}
+
+.seccion__entradilla{
+  font-size:var(--t-entradilla);
+  font-weight:300;
+  color:var(--acero);
+  max-width:38em;
+}
+.seccion__entradilla--clara{color:#DCE6EF}
+
+/* ── 02 · Servicios ─────────────────────────────────────────────────────── */
+/* Las tarjetas ya no se unen por filete de 1 px: al elevarse dejarían ver el
+   fondo de la reja por debajo y la retícula se rompería en cada hover. Ahora
+   cada tarjeta lleva su propio borde y hay aire entre ellas, que es la forma
+   en que un objeto con sombra puede convivir con una retícula. */
+.tarjetas{
+  display:grid;
+  grid-template-columns:minmax(0,1fr);
+  gap:clamp(1rem,2vw,1.5rem);
+}
+@media (min-width:680px){
+  .tarjetas{grid-template-columns:repeat(2,minmax(0,1fr))}
+}
+@media (min-width:1080px){
+  .tarjetas{grid-template-columns:repeat(4,minmax(0,1fr))}
+}
+
+.tarjeta{
+  display:flex;flex-direction:column;
+  background:var(--papel);
+  padding:clamp(1.5rem,2.5vw,2rem);
+  border:1px solid var(--linea);
+  border-top:3px solid var(--consulta);
+  /* transform y box-shadow se animan en el compositor; background-color y
+     border-color repintan. Se declaran por separado para no obligar al
+     navegador a interpolar todo en el mismo hilo. */
+  transition:transform .25s cubic-bezier(.22,.61,.36,1),
+             box-shadow .25s cubic-bezier(.22,.61,.36,1),
+             background-color .2s linear,border-top-color .2s linear;
+}
+/* Elevación al pasar el cursor: 4 px y una sombra en Azul Registro al 10%.
+   Es una desviación deliberada del §02 del manual, pedida y confirmada por la
+   firma; queda registrada en LEEME.md. La sombra usa el azul de la casa y no
+   un negro genérico, para que la elevación siga leyéndose como marca.
+   El filo superior y el fondo se mantienen: la señal de color funciona en
+   pantallas táctiles, donde no hay hover. */
+.tarjeta:hover,
+.tarjeta:focus-within{
+  transform:translateY(-4px);
+  box-shadow:0 10px 15px -3px rgba(17,58,94,.1),0 4px 6px -4px rgba(17,58,94,.1);
+  background:var(--niebla);
+  border-top-color:var(--registro);
+}
+
+.tarjeta__linea{
+  font-family:var(--mono);
+  font-size:var(--t-meta);
+  color:var(--consulta);
+  margin-bottom:0.875rem;
+}
+.tarjeta__titulo{
+  font-size:var(--t-subtitulo);
+  font-weight:500;
+  line-height:1.25;
+  color:var(--registro);
+  margin-bottom:0.75rem;
+}
+.tarjeta__texto{
+  font-size:0.9375rem;
+  color:var(--grafito);
+  margin-bottom:1.25rem;
+}
+.tarjeta .lista-marcada{margin-bottom:1.5rem}
+.tarjeta__pie{
+  margin-top:auto;
+  padding-top:1rem;
+  border-top:1px solid var(--linea);
+}
+
+/* ── 03 · Monitor de datos ──────────────────────────────────────────────── */
+.portal{
+  display:grid;
+  grid-template-columns:minmax(0,1fr);
+  gap:1px;
+  background:var(--linea-oscura);
+  border:1px solid var(--linea-oscura);
+}
+@media (min-width:940px){
+  .portal{grid-template-columns:260px minmax(0,1fr)}
+}
+
+.portal__rail{
+  background:var(--azul-profundo);
+  padding:clamp(1.25rem,2.5vw,1.75rem);
+}
+.portal__rotulo{
+  font-size:var(--t-antetitulo);
+  font-weight:700;letter-spacing:0.2em;text-transform:uppercase;
+  color:var(--claro-suave);
+  margin-bottom:0.875rem;
+}
+.portal__rotulo--separado{margin-top:2rem}
+.portal__ayuda{
+  font-size:0.8125rem;
+  color:#A9C0D6;
+  margin-bottom:1.5rem;
+}
+.portal__ayuda strong{color:#FFF;font-weight:500}
+
+.rail li + li{margin-top:1px}
+.rail__boton{
+  display:block;width:100%;
+  padding:0.8125rem 1rem;
+  background:transparent;
+  border:0;
+  border-left:3px solid transparent;
+  color:var(--claro-suave);
+  font-family:var(--texto);
+  font-size:0.9375rem;
+  text-align:left;
+  cursor:pointer;
+  transition:background-color .15s linear,color .15s linear;
+}
+.rail__boton:hover{background:rgba(255,255,255,.06);color:#FFF}
+.rail__boton[aria-current="true"]{
+  background:rgba(255,255,255,.1);
+  border-left-color:var(--cifra);
+  color:#FFF;font-weight:700;
+}
+.rail__nota{
+  display:block;
+  font-family:var(--mono);
+  font-size:0.6875rem;
+  font-weight:400;
+  color:#8FA9C0;
+  margin-top:0.25rem;
+}
+
+.portal__panel{
+  background:var(--registro);
+  padding:clamp(1.25rem,2.5vw,1.75rem);
+  min-width:0;
+}
+.panel__cabeza{
+  display:flex;align-items:flex-start;justify-content:space-between;
+  gap:1rem;flex-wrap:wrap;
+  padding-bottom:1.25rem;
+  border-bottom:1px solid var(--linea-oscura);
+}
+/* Sin min-width:0 el hijo flex no baja de su ancho de contenido y un título
+   de tablero largo desborda el panel en lugar de partirse. */
+.panel__cabeza > div{min-width:0;flex:1 1 16rem}
+.panel__titulo{overflow-wrap:break-word}
+.panel__titulo{
+  font-size:1.25rem;font-weight:700;color:#FFF;
+  margin-bottom:0.375rem;
+}
+
+.panel__kpis{
+  display:grid;
+  grid-template-columns:repeat(2,minmax(0,1fr));
+  gap:1px;
+  background:var(--linea-oscura);
+  border:1px solid var(--linea-oscura);
+  border-top:0;
+  margin:0 0 1.5rem;
+}
+@media (min-width:720px){
+  .panel__kpis{grid-template-columns:repeat(4,minmax(0,1fr))}
+}
+.panel__kpis .kpi{
+  background:var(--azul-profundo);
+  border:0;
+  padding:1rem clamp(0.875rem,1.5vw,1.25rem) 1.125rem;
+}
+.panel__kpis .kpi__etiqueta{color:var(--claro-suave)}
+.panel__kpis .kpi__valor{color:#FFF;font-size:clamp(1.5rem,3vw,2rem)}
+.panel__kpis .kpi--destacado .kpi__valor{color:var(--cifra)}
+.panel__kpis .kpi__nota{color:#8FA9C0}
+
+.panel__vistas{
+  display:flex;flex-wrap:wrap;gap:0.5rem;
+  margin-bottom:1rem;
+}
+.vista__boton{
+  padding:0.4375rem 0.9375rem;
+  background:transparent;
+  border:1px solid var(--linea-oscura);
+  color:var(--claro-suave);
+  font-family:var(--texto);
+  font-size:0.8125rem;
+  cursor:pointer;
+  transition:background-color .15s linear,color .15s linear,border-color .15s linear;
+}
+.vista__boton:hover{border-color:var(--claro-suave);color:#FFF}
+.vista__boton[aria-selected="true"]{
+  background:#FFF;border-color:#FFF;color:var(--registro);font-weight:700;
+}
+
+/* Contenedor de incrustación: relación fija en escritorio y alto mínimo
+   generoso en móvil, para que un tablero de Power BI no quede aplastado. */
+.lienzo{
+  position:relative;
+  background:var(--niebla);
+  border:1px solid var(--linea-oscura);
+  /* width:100% no es redundante: sin un ancho definido, `aspect-ratio` deduce
+     el ancho a partir del alto en cuanto el alto se fija (min-height, vh) y el
+     contenedor se sale de la pantalla. Con el ancho fijo, la relación siempre
+     resuelve hacia el alto, que es lo que se quiere. */
+  width:100%;
+  aspect-ratio:16/10;
+  min-height:520px;
+}
+/* En móvil el contenedor pasa a 16:9, que es la relación en la que se diseñan
+   los tableros. El min-height es el piso: a 375 px de ancho, 16:9 puro son
+   211 px de alto y ahí no se lee ninguna leyenda. En vertical, además, el
+   tablero ni siquiera se descarga solo (ver .aviso-rotar y cifrapais.js). */
+@media (max-width:640px){
+  .lienzo{aspect-ratio:16/9;height:auto;min-height:340px}
+}
+/* Teléfono apaisado: manda el alto de pantalla, no la relación. Se apaga
+   aspect-ratio explícitamente para que no vuelva a deducir el ancho. */
+@media (max-width:640px) and (orientation:landscape){
+  .lienzo{aspect-ratio:auto;min-height:0;height:82vh}
+}
+.lienzo__marco{
+  position:absolute;inset:0;
+  width:100%;height:100%;
+  border:0;display:block;
+}
+/* Esqueleto de carga.
+   No es un rectángulo gris genérico: reproduce la maqueta que va a aparecer
+   —fila de cuatro KPI y gráfico de barras— en los azules de la casa. El pulso
+   informa de que el proceso sigue vivo; por eso late el esqueleto y no el
+   contenedor entero, que sería ruido. */
+.lienzo__espera{
+  position:absolute;inset:0;
+  display:flex;flex-direction:column;justify-content:center;
+  gap:1.5rem;padding:clamp(1.25rem,3vw,2.25rem);
+  background:var(--azul-profundo);
+  z-index:1;
+}
+
+.esqueleto{display:flex;flex-direction:column;gap:1.25rem;flex:1;min-height:0}
+
+.esqueleto__kpis{display:grid;grid-template-columns:repeat(4,1fr);gap:1px}
+.esqueleto__kpis span{display:block;height:4.5rem;background:#1B4E7A}
+
+.esqueleto__grafico{
+  display:flex;align-items:flex-end;gap:clamp(0.5rem,2vw,1.25rem);
+  flex:1;min-height:6rem;
+  border-bottom:1px solid var(--linea-oscura);
+  padding-bottom:1px;
+}
+/* Los altos son fijos y viven acá, no en un atributo style= del HTML: la CSP
+   del sitio no admite 'unsafe-inline' en style-src. Ocho barras desparejas
+   bastan para que el esqueleto se lea como un gráfico y no como una grilla. */
+.esqueleto__grafico i{display:block;flex:1;background:#1B4E7A}
+.esqueleto__grafico i:nth-child(1){height:42%}
+.esqueleto__grafico i:nth-child(2){height:66%}
+.esqueleto__grafico i:nth-child(3){height:54%}
+.esqueleto__grafico i:nth-child(4){height:81%}
+.esqueleto__grafico i:nth-child(5){height:60%}
+.esqueleto__grafico i:nth-child(6){height:93%}
+.esqueleto__grafico i:nth-child(7){height:71%}
+.esqueleto__grafico i:nth-child(8){height:48%}
+
+@media (prefers-reduced-motion:no-preference){
+  .esqueleto__kpis span,
+  .esqueleto__grafico i{animation:pulso-carga 1.5s ease-in-out infinite}
+  /* Desfase por columna: el barrido se lee como progreso, no como parpadeo. */
+  .esqueleto__grafico i:nth-child(2n){animation-delay:.15s}
+  .esqueleto__grafico i:nth-child(3n){animation-delay:.3s}
+  .esqueleto__kpis span:nth-child(2){animation-delay:.1s}
+  .esqueleto__kpis span:nth-child(3){animation-delay:.2s}
+  .esqueleto__kpis span:nth-child(4){animation-delay:.3s}
+}
+/* El pulso va por opacidad y no por background-color: son doce elementos
+   latiendo a la vez, y opacity es la única propiedad —con transform— que el
+   navegador compone sin repintar. */
+@keyframes pulso-carga{
+  0%,100%{opacity:.45}
+  50%    {opacity:1}
+}
+
+.lienzo__mensaje{text-align:center}
+.lienzo__mensaje .antetitulo{margin:0 0 0.375rem}
+.lienzo__nota{font-size:0.8125rem;color:#A9C0D6;margin:0}
+#btn-cargar-tablero{margin-top:1rem}
+
+/* Aviso de orientación: solo en pantalla chica y en vertical. Va con el icono
+   de teléfono girando —un gesto, no un adorno— porque es la única instrucción
+   de la página que le pide algo al usuario antes de mostrarle el dato. */
+.aviso-rotar{display:none}
+@media (max-width:760px) and (orientation:portrait){
+  .aviso-rotar{
+    display:grid;
+    grid-template-columns:auto minmax(0,1fr);
+    align-items:center;
+    gap:0.875rem;
+    margin-bottom:1rem;
+    padding:0.875rem 1rem;
+    border:1px solid var(--cifra);
+    border-left-width:4px;
+    background:var(--azul-profundo);
+    color:#FFF;
+    font-size:0.875rem;
+    font-weight:500;
+    line-height:1.35;
+  }
+  /* Teléfono esquemático dibujado con bordes: sin imagen, sin fuente de
+     iconos y sin una petición más. */
+  .aviso-rotar::before{
+    content:"";
+    display:block;
+    width:1.125rem;height:1.75rem;
+    border:2px solid var(--cifra);
+    border-top-width:5px;border-bottom-width:5px;
+    transform-origin:50% 50%;
+  }
+}
+@media (max-width:760px) and (orientation:portrait) and (prefers-reduced-motion:no-preference){
+  .aviso-rotar::before{animation:girar-aviso 2.4s ease-in-out infinite}
+}
+@keyframes girar-aviso{
+  0%,55%,100%{transform:rotate(0deg)}
+  75%,90%    {transform:rotate(-90deg)}
+}
+
+.panel__pie{margin-top:1rem}
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   04 · INSIGHTS TERRITORIALES
+   Es la segunda mitad de la zona de datos: Monitor muestra el tablero vivo,
+   Radiografía muestra la ficha comparable de diez departamentos. Van las dos
+   sobre fondo oscuro a propósito, con un paso de tono entre ellas, para que se
+   lean como un mismo capítulo dentro de un sitio que por lo demás es papel.
+
+   El vidrio (glassmorphism) es la única superficie translúcida del sitio y
+   está acotada a esta sección: sobre el Azul Profundo, una capa al 5% de
+   blanco con desenfoque de fondo separa la tarjeta sin agregar otro color a
+   la paleta. Sobre papel no se usa —no habría nada que desenfocar—.
+   ═══════════════════════════════════════════════════════════════════════ */
+.seccion--radiografia{
+  background:var(--azul-profundo);
+  color:#FFF;
+  /* Contiene el desbordamiento horizontal de la pista en móvil. */
+  overflow:hidden;
+}
+
+/* Índice de departamentos: atajo directo a una tarjeta sin tener que
+   arrastrar diez veces. Son enlaces reales, así que funcionan sin JS. */
+.chips-caja{margin-bottom:clamp(1.5rem,3vw,2rem)}
+.chips{display:flex;flex-wrap:wrap;gap:0.5rem}
+.chip{
+  display:block;
+  padding:0.375rem 0.75rem;
+  border:1px solid rgba(255,255,255,.18);
+  background:rgba(255,255,255,.04);
+  color:var(--claro-suave);
+  font-family:var(--mono);
+  font-size:0.75rem;
+  letter-spacing:0.04em;
+  text-decoration:none;
+  transition:background-color .15s linear,color .15s linear,border-color .15s linear;
+}
+.chip:hover{background:rgba(255,255,255,.12);border-color:var(--claro-suave);color:#FFF}
+.chip[aria-current="true"]{
+  background:#FFF;border-color:#FFF;color:var(--azul-profundo);font-weight:700;
+}
+
+/* ── Carrusel ───────────────────────────────────────────────────────────── */
+/* Una pista con desplazamiento nativo y anclaje: el navegador se encarga del
+   gesto táctil, del impulso y de la barra. El JS solo agrega los botones y la
+   cuenta; si falla, la sección sigue siendo arrastrable. */
+.carrusel__pista{
+  display:grid;
+  grid-auto-flow:column;
+  grid-auto-columns:minmax(18.5rem,22rem);
+  gap:clamp(1rem,2vw,1.25rem);
+  overflow-x:auto;
+  overscroll-behavior-x:contain;
+  scroll-snap-type:x mandatory;
+  scroll-padding-inline:0;
+  /* Aire arriba y abajo: sin él, overflow recorta los 4 px que sube la
+     tarjeta al pasar el cursor y la sombra queda cortada en seco. */
+  padding-block:0.75rem 1.25rem;
+  /* Espacio para que la última tarjeta pueda anclarse a la izquierda. */
+  scrollbar-color:rgba(255,255,255,.35) transparent;
+  scrollbar-width:thin;
+}
+.carrusel__pista::-webkit-scrollbar{height:6px}
+.carrusel__pista::-webkit-scrollbar-thumb{background:rgba(255,255,255,.3)}
+.carrusel__pista::-webkit-scrollbar-track{background:rgba(255,255,255,.07)}
+.carrusel__pista:focus-visible{outline:2px solid var(--cifra);outline-offset:4px}
+
+@media (min-width:1080px){
+  .carrusel__pista{grid-auto-columns:minmax(23rem,26rem)}
+}
+
+.carrusel__mandos{
+  display:flex;align-items:center;gap:1rem;
+  margin-top:1rem;
+}
+.carrusel__flecha{
+  padding:0.5rem 1rem;
+  background:transparent;
+  border:1px solid rgba(255,255,255,.22);
+  color:var(--claro-suave);
+  font-family:var(--texto);
+  font-size:0.8125rem;
+  font-weight:500;
+  cursor:pointer;
+  transition:background-color .15s linear,color .15s linear,border-color .15s linear;
+}
+.carrusel__flecha:hover:not([disabled]){background:rgba(255,255,255,.1);border-color:#FFF;color:#FFF}
+.carrusel__flecha[disabled]{opacity:.4;cursor:default}
+.carrusel__cuenta{
+  margin-left:auto;
+  font-family:var(--mono);
+  font-size:var(--t-meta);
+  font-variant-numeric:tabular-nums;
+  color:var(--claro-suave);
+}
+
+/* ── Tarjeta de departamento ────────────────────────────────────────────── */
+.territorio{
+  display:flex;flex-direction:column;
+  scroll-snap-align:start;
+  padding:clamp(1.25rem,2.5vw,1.625rem);
+  background:rgba(255,255,255,.05);
+  border:1px solid rgba(255,255,255,.13);
+  /* El desenfoque de fondo es lo que convierte la capa translúcida en vidrio;
+     sin él quedaría un simple velo gris. Es progresivo: donde no hay soporte,
+     la tarjeta se ve como un panel translúcido y no se rompe nada. */
+  -webkit-backdrop-filter:blur(14px) saturate(120%);
+  backdrop-filter:blur(14px) saturate(120%);
+  transition:transform .25s cubic-bezier(.22,.61,.36,1),
+             box-shadow .25s cubic-bezier(.22,.61,.36,1),
+             background-color .2s linear,border-color .2s linear;
+}
+/* Misma elevación que las tarjetas de Servicios. La sombra conserva el matiz
+   del Azul Registro, pero sube de opacidad: sobre Azul Profundo, un 10% no se
+   vería, y una sombra que no se ve no es una señal. */
+.territorio:hover,
+.territorio:focus-within{
+  transform:translateY(-4px);
+  box-shadow:0 12px 24px -8px rgba(17,58,94,.55),0 4px 6px -4px rgba(17,58,94,.4);
+  background:rgba(255,255,255,.09);
+  border-color:rgba(255,255,255,.28);
+}
+
+.territorio__cabeza{
+  padding-bottom:0.875rem;
+  border-bottom:1px solid rgba(255,255,255,.14);
+  margin-bottom:1rem;
+}
+.territorio__nombre{
+  font-size:1.5rem;font-weight:700;letter-spacing:-0.015em;
+  color:#FFF;margin-bottom:0.5rem;
+}
+.territorio__masa{
+  display:flex;flex-direction:column;gap:0.125rem;
+  font-family:var(--mono);
+  font-size:0.75rem;
+  color:var(--claro-suave);
+  font-variant-numeric:tabular-nums;
+}
+.territorio__masa b{color:#FFF;font-weight:700}
+
+/* Cuatro mini-KPI, cada uno contra su tasa nacional. La comparación va en
+   texto y con signo, no en verde y rojo: el Rojo Tierra es alerta del sistema
+   y acá no hay ninguna alerta, hay una diferencia. */
+.territorio__kpis{
+  display:grid;
+  grid-template-columns:repeat(2,minmax(0,1fr));
+  gap:1px;
+  background:rgba(255,255,255,.13);
+  border:1px solid rgba(255,255,255,.13);
+  margin-bottom:1rem;
+}
+.mini{background:rgba(12,44,72,.55);padding:0.625rem 0.75rem 0.6875rem}
+.mini__etiqueta{
+  font-size:0.625rem;font-weight:700;
+  letter-spacing:0.12em;text-transform:uppercase;
+  color:var(--claro-suave);
+  margin-bottom:0.25rem;
+}
+.mini__valor{
+  font-size:1.375rem;font-weight:700;line-height:1;
+  letter-spacing:-0.02em;color:#FFF;
+  font-variant-numeric:tabular-nums;
+  margin:0;
+}
+.mini__ref{
+  font-family:var(--mono);
+  font-size:0.6875rem;
+  color:#8FA9C0;
+  font-variant-numeric:tabular-nums;
+  margin:0.3125rem 0 0;
+}
+
+.bloque{margin-bottom:1rem}
+.bloque .antetitulo{margin-bottom:0.625rem}
+
+/* Ingreso y pensión: misma retícula que los cuatro KPI de arriba. El peso
+   colombiano trae siete cifras, así que el valor baja medio paso de cuerpo
+   para no desbordar la celda en la columna angosta. */
+.territorio__calidad{
+  display:grid;
+  grid-template-columns:repeat(2,minmax(0,1fr));
+  gap:1px;
+  background:rgba(255,255,255,.13);
+  border:1px solid rgba(255,255,255,.13);
+  margin-bottom:1rem;
+}
+.mini__valor--peso{font-size:1.125rem}
+
+/* ── Brecha de género ───────────────────────────────────────────────────── */
+.par + .par{margin-top:0.75rem}
+.par__titulo{
+  font-size:0.75rem;font-weight:700;color:#FFF;
+  margin-bottom:0.375rem;
+}
+.par__fila{
+  display:grid;
+  grid-template-columns:4.25rem minmax(0,1fr) 3rem;
+  align-items:center;
+  gap:0.5rem;
+  margin-bottom:0.3125rem;
+}
+.par__rotulo{font-size:0.75rem;color:var(--claro-suave)}
+.par__pista{height:0.625rem;background:rgba(255,255,255,.1)}
+.par__barra{display:block;height:100%;width:0}
+/* Dos pasos de la escalera del azul de la casa: dos categorías comparables,
+   ninguna destacada sobre la otra. El acento amarillo no entra acá porque no
+   marca categorías (§09). */
+.par__barra--h{background:#4A8AC0}
+.par__barra--m{background:#C2D6E6}
+.par__cifra{
+  font-family:var(--mono);
+  font-size:0.75rem;
+  color:#FFF;
+  text-align:right;
+  font-variant-numeric:tabular-nums;
+}
+.brecha__saldo{
+  font-size:0.8125rem;
+  line-height:1.4;
+  color:#DCE6EF;
+  margin:0.75rem 0 0.5rem;
+}
+
+/* ── Dónde trabaja la gente ─────────────────────────────────────────────── */
+.sectores{display:flex;flex-direction:column;gap:0.625rem}
+.sector{
+  display:grid;
+  grid-template-columns:minmax(0,1fr) auto;
+  gap:0.25rem 0.75rem;
+}
+.sector__nombre{font-size:0.8125rem;color:#FFF;line-height:1.3}
+.sector__cifra{
+  font-family:var(--mono);
+  font-size:0.8125rem;font-weight:700;color:#FFF;
+  font-variant-numeric:tabular-nums;
+  text-align:right;
+}
+.sector__pista{
+  grid-column:1 / -1;
+  height:0.5rem;
+  background:rgba(255,255,255,.1);
+}
+.sector__barra{display:block;height:100%;width:0;background:#3E82BC}
+.sector__nota{
+  grid-column:1 / -1;
+  font-family:var(--mono);
+  font-size:0.6875rem;
+  color:#8FA9C0;
+  font-variant-numeric:tabular-nums;
+}
+
+/* Las barras se dibujan con una transición al entrar en pantalla, no al
+   cargar: el crecimiento es lo que hace legible la comparación. */
+@media (prefers-reduced-motion:no-preference){
+  .par__barra,.sector__barra{transition:width .7s cubic-bezier(.22,.61,.36,1)}
+}
+
+/* Muestra reducida: el manual obliga a decirlo dentro de la pieza y no en una
+   nota al pie que nadie lee (§07). Va con el filo de alerta, sin colorear el
+   texto: la advertencia es sobre precisión, no sobre un error. */
+.aviso-muestra{
+  padding:0.625rem 0.75rem;
+  border-left:3px solid var(--tierra);
+  background:rgba(181,67,47,.12);
+  font-size:0.75rem;
+  line-height:1.4;
+  color:#F0DAD4;
+  margin-bottom:1rem;
+}
+
+.territorio__pie{
+  margin-top:auto;
+  padding-top:0.875rem;
+  border-top:1px solid rgba(255,255,255,.14);
+}
+
+/* ── 05 · Publicaciones ─────────────────────────────────────────────────── */
+.papers{border-top:1px solid var(--linea)}
+
+.paper{
+  display:grid;
+  grid-template-columns:minmax(0,1fr);
+  gap:1rem;
+  padding-block:clamp(1.75rem,3vw,2.25rem);
+  border-bottom:1px solid var(--linea);
+}
+@media (min-width:820px){
+  .paper{grid-template-columns:8rem minmax(0,1fr) 10rem;gap:2rem;align-items:start}
+}
+
+.paper__codigo{
+  font-family:var(--mono);
+  font-size:var(--t-meta);
+  font-weight:700;
+  color:var(--consulta);
+  letter-spacing:0.02em;
+  padding-top:0.25rem;
+}
+.paper__titulo{
+  font-size:clamp(1.125rem,2vw,1.375rem);
+  font-weight:500;
+  line-height:1.25;
+  margin-bottom:0.625rem;
+}
+.paper__titulo a{color:var(--registro);text-decoration:none}
+.paper__titulo a:hover{text-decoration:underline;text-decoration-color:var(--cifra);text-decoration-thickness:2px}
+.paper__resumen{
+  font-size:0.9375rem;
+  color:var(--grafito);
+  max-width:42em;
+  margin-bottom:0.75rem;
+}
+.paper__recursos{
+  display:flex;flex-wrap:wrap;gap:0.5rem;
+  align-content:start;
+}
+.paper__recursos a{
+  display:block;
+  padding:0.3125rem 0.75rem;
+  border:1px solid var(--linea);
+  font-family:var(--mono);
+  font-size:0.6875rem;
+  letter-spacing:0.08em;
+  text-transform:uppercase;
+  color:var(--acero);
+  text-decoration:none;
+}
+.paper__recursos a:hover{border-color:var(--registro);color:var(--registro)}
+
+/* ── 06 · Método ────────────────────────────────────────────────────────── */
+.metodo{
+  display:grid;
+  grid-template-columns:minmax(0,1fr);
+  gap:clamp(2rem,4vw,3rem);
+}
+@media (min-width:860px){
+  .metodo{grid-template-columns:repeat(3,minmax(0,1fr))}
+}
+.metodo__columna--cita{
+  border-left:3px solid var(--cifra);
+  padding-left:1.5rem;
+}
+.cita{
+  font-size:clamp(1.25rem,2.4vw,1.625rem);
+  font-weight:300;
+  line-height:1.3;
+  color:var(--registro);
+  margin-bottom:1rem;
+}
+
+/* ── 07 · Sobre nosotros ────────────────────────────────────────────────── */
+/* Retrato cuadrado, sin recorte circular: el manual no admite radios y un
+   cuadrado honesto envejece mejor que una moda. La ficha va debajo, con la
+   misma jerarquía tipográfica de las tarjetas de servicios. */
+.equipo{
+  display:grid;
+  grid-template-columns:minmax(0,1fr);
+  gap:clamp(1rem,2vw,1.5rem);
+}
+@media (min-width:640px){
+  .equipo{grid-template-columns:repeat(3,minmax(0,1fr))}
+}
+.persona{
+  background:#FFF;
+  border:1px solid var(--linea);
+  border-top:3px solid var(--registro);
+  transition:transform .25s cubic-bezier(.22,.61,.36,1),
+             box-shadow .25s cubic-bezier(.22,.61,.36,1),
+             border-top-color .2s linear;
+}
+.persona:hover,.persona:focus-within{
+  transform:translateY(-4px);
+  box-shadow:0 10px 15px -3px rgba(17,58,94,.1),0 4px 6px -4px rgba(17,58,94,.1);
+  border-top-color:var(--cifra);
+}
+.persona__foto{
+  display:block;
+  width:100%;
+  height:auto;
+  aspect-ratio:1/1;
+  object-fit:cover;
+  /* Del color pleno a un tono unificado: tres cámaras distintas, una sola
+     temperatura. Se destiñe apenas, no se vuelve blanco y negro. */
+  filter:saturate(.82);
+}
+.persona__ficha{padding:1rem 1.125rem 1.125rem;border-top:1px solid var(--linea)}
+.persona__nombre{
+  font-size:1.0625rem;
+  font-weight:700;
+  color:var(--registro);
+  margin-bottom:0.125rem;
+}
+.persona__rol{
+  font-family:var(--mono);
+  font-size:0.75rem;
+  letter-spacing:0.08em;
+  text-transform:uppercase;
+  color:var(--acero);
+}
+
+/* ── 08 · Contacto ──────────────────────────────────────────────────────── */
+.contacto{
+  display:grid;
+  grid-template-columns:minmax(0,1fr);
+  gap:clamp(2.5rem,5vw,4rem);
+}
+@media (min-width:880px){
+  .contacto{grid-template-columns:minmax(0,1fr) minmax(0,1fr)}
+}
+
+/* El correo es la vía principal: a un secretario de despacho no se le pide
+   llenar campos (§10). Por eso pesa tipográficamente más que el formulario. */
+.correo{
+  display:inline-block;
+  font-size:clamp(1.375rem,3.4vw,2.125rem);
+  font-weight:700;
+  letter-spacing:-0.015em;
+  color:var(--registro);
+  text-decoration:none;
+  border-bottom:3px solid var(--cifra);
+  padding-bottom:0.125rem;
+  margin-bottom:1.25rem;
+  word-break:break-word;
+}
+.correo:hover{color:var(--consulta)}
+.contacto__nota{
+  font-size:0.9375rem;
+  color:var(--acero);
+  max-width:34em;
+  margin-bottom:2rem;
+}
+
+.ficha{border-top:1px solid var(--linea);margin:0}
+.ficha__fila{
+  display:grid;
+  grid-template-columns:9rem minmax(0,1fr);
+  gap:1rem;
+  padding-block:0.75rem;
+  border-bottom:1px solid var(--linea);
+}
+.ficha dt{
+  font-size:var(--t-antetitulo);
+  font-weight:700;letter-spacing:0.13em;text-transform:uppercase;
+  color:var(--acero);
+  padding-top:0.15rem;
+}
+.ficha dd{margin:0;font-size:0.9375rem}
+
+.formulario{
+  background:var(--niebla);
+  border:1px solid var(--linea);
+  padding:clamp(1.5rem,3vw,2rem);
+}
+.campo{margin-bottom:1.25rem}
+
+/* Dos columnas para los campos cortos en cuanto hay ancho. La distribución se
+   declara con clases (--medio / --ancho) y no con :nth-child, que se rompe en
+   silencio al reordenar o insertar un campo. */
+@media (min-width:520px){
+  .formulario{
+    display:grid;
+    grid-template-columns:repeat(2,minmax(0,1fr));
+    column-gap:1.25rem;
+  }
+  .formulario > *{grid-column:1 / -1}
+  .campo--medio{grid-column:span 1}
+}
+
+.campo__etiqueta{
+  display:block;
+  font-size:0.8125rem;
+  font-weight:500;
+  color:var(--registro);
+  margin-bottom:0.375rem;
+  transition:color .15s linear;
+}
+/* El campo en uso se señala en la etiqueta, no con un halo difuso alrededor
+   del control: el resplandor es una sombra, y aquí no hay sombras. */
+.campo:focus-within .campo__etiqueta{color:var(--consulta)}
+.campo__control{
+  display:block;width:100%;
+  padding:0.6875rem 0.875rem;
+  background:var(--papel);
+  border:1px solid var(--linea);
+  border-radius:0;
+  color:var(--grafito);
+  font-family:var(--texto);
+  font-size:1rem;                 /* 16 px: evita el zoom automático en iOS */
+  line-height:1.4;
+  transition:border-color .15s linear;
+}
+/* Borde de 2 px en vez de un anillo con desenfoque: mismo peso visual, sin
+   recurrir a box-shadow. El relleno compensa el píxel extra para que el
+   control no salte al recibir el foco. */
+.campo__control:focus{
+  outline:none;
+  border-color:var(--consulta);
+  border-width:2px;
+  padding:calc(0.6875rem - 1px) calc(0.875rem - 1px);
+  /* Anillo suave alrededor del control activo. Ahora que el sistema admite
+     sombra, el halo acompaña al borde en vez de reemplazarlo: el borde es la
+     señal que sobrevive en alto contraste, el halo es el refuerzo. */
+  box-shadow:0 0 0 3px rgba(46,110,158,.16);
+}
+.campo__control:focus-visible{outline:2px solid var(--cifra);outline-offset:1px}
+.campo__control--area{resize:vertical;min-height:7rem}
+.campo__control[aria-invalid="true"]{border-color:var(--tierra);border-width:2px}
+
+.campo--casilla{
+  display:grid;
+  grid-template-columns:auto minmax(0,1fr);
+  gap:0.625rem;
+  align-items:start;
+}
+.casilla{width:1.125rem;height:1.125rem;margin-top:0.15rem;accent-color:var(--consulta)}
+.campo__etiqueta--casilla{font-weight:400;font-size:0.8125rem;color:var(--grafito);margin:0}
+.campo--casilla .campo__error{grid-column:1/-1}
+
+/* El Rojo Tierra aparece solo aquí: es alerta, no categoría (§03). */
+.campo__error{
+  font-family:var(--mono);
+  font-size:var(--t-meta);
+  color:var(--tierra);
+  margin:0.375rem 0 0;
+}
+
+.trampa{position:absolute;left:-9999px;width:1px;height:1px;overflow:hidden}
+
+.formulario__aviso{
+  margin-top:1rem;
+  padding:0.875rem 1rem;
+  border-left:3px solid var(--consulta);
+  background:var(--papel);
+  font-size:0.875rem;
+}
+.formulario__aviso[data-estado="error"]{border-left-color:var(--tierra)}
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   PIE
+   ═══════════════════════════════════════════════════════════════════════ */
+.pie{
+  background:var(--registro);
+  color:#FFF;
+  padding-block:clamp(2.5rem,5vw,3.5rem);
+  border-top:3px solid var(--cifra);
+}
+.pie__reja{
+  display:grid;
+  grid-template-columns:minmax(0,1fr);
+  gap:2rem;
+}
+@media (min-width:820px){
+  .pie__reja{grid-template-columns:auto minmax(0,1fr) 22rem;align-items:start;gap:3rem}
+}
+.pie__simbolo{width:44px;height:44px;display:block;margin-bottom:0.875rem}
+.pie__eslogan{font-size:1.25rem;font-weight:700;letter-spacing:-0.01em}
+
+.pie__nav ul{display:flex;flex-wrap:wrap;gap:0.375rem 1.5rem}
+.pie__nav a{color:var(--claro-suave);font-size:0.875rem;text-decoration:none}
+.pie__nav a:hover{color:#FFF;text-decoration:underline}
+
+.pie__legal p{margin-bottom:0.625rem}
+.pie__legal > p:first-child{
+  font-family:var(--mono);font-size:var(--t-meta);color:var(--claro-suave);
+}
+.pie__legal a{color:var(--claro-suave)}
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   MENÚ EN MÓVIL
+   ═══════════════════════════════════════════════════════════════════════ */
+@media (max-width:860px){
+  .hamburguesa{display:flex}
+
+  .nav{
+    position:absolute;left:0;right:0;top:100%;
+    background:var(--azul-profundo);
+    border-bottom:1px solid var(--linea-oscura);
+    display:none;
+  }
+  .nav[data-abierto="true"]{display:block}
+
+  .nav__lista{
+    flex-direction:column;align-items:stretch;gap:0;
+    padding:0.5rem var(--gotera) 1rem;
+  }
+  .nav__enlace{
+    padding:0.875rem 0;
+    font-size:1rem;
+    border-bottom:1px solid var(--linea-oscura);
+  }
+  .nav__enlace:hover,
+  .nav__enlace[aria-current="true"]{border-bottom-color:var(--cifra)}
+
+  .barra__caja{position:relative}
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   MOVIMIENTO Y APARICIONES
+   ═══════════════════════════════════════════════════════════════════════ */
+@media (prefers-reduced-motion:no-preference){
+  .aparece{opacity:0;transform:translateY(12px);transition:opacity .5s linear,transform .5s cubic-bezier(.22,.61,.36,1)}
+  .aparece[data-visible="true"]{opacity:1;transform:none}
+}
+@media (prefers-reduced-motion:reduce){
+  html{scroll-behavior:auto}
+  *,*::before,*::after{animation:none !important;transition:none !important}
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   IMPRESIÓN — el sitio se imprime como ficha, no como pantalla
+   ═══════════════════════════════════════════════════════════════════════ */
+@media print{
+  .barra,.saltar,.portal__rail,.panel__vistas,.lienzo,.formulario,.botonera,
+  .aviso-rotar,.chips-caja,.carrusel__mandos{display:none}
+  .portada,.seccion--oscura,.seccion--radiografia,.pie{background:#FFF;color:#000}
+  .portada__eslogan,.seccion__titulo--claro,.panel__titulo,
+  .territorio__nombre,.mini__valor,.sector__nombre,.par__cifra{color:#000}
+  .seccion{padding-block:1.5rem}
+  a{color:#000}
+  /* En papel el carrusel no se desliza: las diez fichas se apilan y se
+     imprimen enteras, cada una sin partirse entre páginas. */
+  .carrusel__pista{display:block;overflow:visible}
+  .territorio{
+    background:none;border:1px solid #999;box-shadow:none;transform:none;
+    margin-bottom:1rem;break-inside:avoid;
+  }
+  .tarjeta{box-shadow:none;transform:none}
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   NOTA DE MARCA · SOMBRA Y ELEVACIÓN
+   Hasta la v2 este archivo no tenía una sola sombra: el §02 del manual dice
+   «nunca sombra, degradado ni volumen» y el §09 lo repite para tableros.
+   Desde la v3, por decisión expresa de la firma, se admite:
+     · elevación de 4 px al pasar el cursor sobre una tarjeta;
+     · sombra en el matiz del Azul Registro —nunca negra— para sostenerla;
+     · anillo suave en el control de formulario enfocado;
+     · una sola superficie translúcida, la de Insights Territoriales.
+   Sigue vigente el resto: cero border-radius y cero degradados. Las esquinas
+   se mantienen a escuadra, que es lo que hace que el sistema se siga
+   reconociendo aunque ahora tenga volumen.
+   ═══════════════════════════════════════════════════════════════════════ */
+.lienzo{box-shadow:0 4px 6px -1px rgba(9,28,46,.35)}
+

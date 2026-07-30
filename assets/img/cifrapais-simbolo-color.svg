@@ -1,0 +1,10 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100">
+  <title>Cifra País — símbolo</title>
+  <g stroke-linecap="butt">
+  <line x1="20" y1="84" x2="20" y2="54" stroke="#6690B8" stroke-width="11"/>
+  <line x1="40" y1="84" x2="40" y2="42" stroke="#4E8CC0" stroke-width="11"/>
+  <line x1="60" y1="84" x2="60" y2="30" stroke="#2E6E9E" stroke-width="11"/>
+  <line x1="80" y1="84" x2="80" y2="16" stroke="#113A5E" stroke-width="11"/>
+    <line x1="10" y1="74" x2="90" y2="26" stroke="#E8A317" stroke-width="12"/>
+  </g>
+</svg>
