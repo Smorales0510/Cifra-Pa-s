@@ -125,22 +125,27 @@
       ]
     },
     {
-      /* Piloto municipal. El tablero se sirve desde /monitor/Territorio/ y
-         cubre pobreza, empleo, educación, salud, vivienda y seguridad de un
-         municipio, comparados con el departamento y con el país.
-         Los KPI se completan cuando esté publicado: acá no se escribe una
-         cifra que no se pueda rastrear hasta su fuente (manual §09). */
+      /* Los cuatro KPI son cifras departamentales de la ECV 2023 y del cruce
+         valor agregado DANE / población, verificadas contra la fuente cruda.
+         Ninguna se escribe de memoria: salen del mismo archivo que alimenta
+         el tablero. */
       id: 'territorial',
       nombre: 'Territorial',
-      nota: 'El Carmen de Viboral · piloto',
-      titulo: 'Calidad de vida municipal',
-      corte: 'Encuesta de Calidad de Vida 2021 y 2023 · proyecciones DANE 2026',
-      fuente: 'Fuente: DANE · ECV 2021 y 2023, proyecciones de población 2018–2035 · DNP · elaboración Cifra País',
+      nota: 'ECV Antioquia · 125 municipios',
+      titulo: 'Calidad de vida en Antioquia',
+      corte: 'ECV 2021 y 2023 · ICM 2010–2024 · valor agregado DANE 2011–2024p',
+      fuente: 'Fuente: Gobernación de Antioquia · ECV 2021 y 2023 · DANE · DNP · elaboración Cifra País',
       kpis: [
-        { etiqueta: 'Población', valor: '70.734', nota: 'proyección DANE 2026' }
+        { etiqueta: 'Pobreza IPM', valor: '10,1', sufijo: '%', nota: 'personas · 2023', destacado: true },
+        { etiqueta: 'Pobreza NBI', valor: '11,4', sufijo: '%', nota: 'personas · 2023' },
+        { etiqueta: 'Población', valor: '6,88', sufijo: ' M', nota: 'proyección 2024' },
+        { etiqueta: 'PIB per cápita', valor: '33,4', sufijo: ' M', nota: 'COP corrientes · 2024' }
       ],
       vistas: [
-        { id: 'general', nombre: 'Panorama', url: '' }
+        { id: 'general', nombre: 'Panorama', url: 'https://cifrapais.com/monitor/Territorio/' },
+        { id: 'mapa', nombre: 'Mapa', url: 'https://cifrapais.com/monitor/Territorio/#mapa' },
+        { id: 'comparar', nombre: 'Comparar', url: 'https://cifrapais.com/monitor/Territorio/#comparar' },
+        { id: 'explorar', nombre: 'Explorar', url: 'https://cifrapais.com/monitor/Territorio/#explorar' }
       ]
     }
   ];
