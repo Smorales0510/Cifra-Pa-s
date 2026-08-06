@@ -49,8 +49,23 @@ a{color:var(--registro)}
   position:sticky;top:0;z-index:20;box-shadow:0 1px 3px rgba(17,58,94,.06)}
 .controles__reja{display:grid;gap:0.75rem;padding:0.875rem 0;
   grid-template-columns:minmax(0,1fr);align-items:end}
-@media(min-width:860px){
-  .controles__reja{grid-template-columns:minmax(0,2.2fr) minmax(0,1.1fr) minmax(0,1fr) minmax(0,1fr) auto}
+@media(min-width:760px){
+  .controles__reja{grid-template-columns:repeat(2,minmax(0,1fr))}
+  .campo--indicador{grid-column:1 / -1}
+}
+@media(min-width:1120px){
+  .controles__reja{
+    grid-template-columns:minmax(0,2.4fr) minmax(0,1.2fr) minmax(0,0.8fr) minmax(0,0.9fr) minmax(0,1.1fr) auto;
+  }
+  .campo--indicador{grid-column:auto}
+}
+/* El campo de indicador lleva dos controles apilados: el filtro de texto y la
+   lista. Sin el hueco, el borde de uno toca el del otro y parecen un solo
+   control partido. */
+.campo--indicador .campo__control--busca{margin-bottom:0.3rem}
+.campo__cuenta{
+  font-family:var(--mono);font-size:0.625rem;color:var(--registro);
+  text-transform:none;letter-spacing:0;
 }
 .campo{min-width:0}
 .campo__rotulo{display:block;margin-bottom:0.25rem;font-family:var(--mono);font-size:0.625rem;
@@ -60,6 +75,9 @@ a{color:var(--registro)}
   background:var(--papel);color:var(--texto);font-family:var(--letra);font-size:0.875rem;
 }
 .campo__control:focus-visible{outline:2px solid var(--cifra);outline-offset:1px;border-color:var(--registro)}
+/* La lista de indicadores puede quedar en cero resultados tras filtrar: se
+   marca en rojo para que se note que el filtro es el que está mordiendo. */
+.campo__control[data-vacio="1"]{border-color:var(--alerta);background:#FDF3F1}
 select.campo__control{appearance:none;
   background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 12 8'%3E%3Cpath d='M1 1.5 6 6.5l5-5' fill='none' stroke='%23113A5E' stroke-width='1.6'/%3E%3C/svg%3E");
   background-repeat:no-repeat;background-position:right 0.6rem center;background-size:0.7rem;padding-right:1.9rem}
@@ -166,3 +184,33 @@ select.campo__control{appearance:none;
   clip:rect(0 0 0 0);white-space:nowrap;border:0}
 
 @media(prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important}}
+
+/* ── Señal de carga ──────────────────────────────────────────────────────── */
+/* Los archivos de tema pesan entre 20 KB y 4 MB. Sin este aviso, cambiar de
+   tema parece un clic al vacío durante varios segundos. */
+.cargando-barra{
+  margin:0;padding:0.5rem 0;text-align:center;
+  background:var(--cifra);color:var(--registro);
+  font-family:var(--mono);font-size:0.75rem;letter-spacing:0.06em;
+  text-transform:uppercase;position:sticky;top:0;z-index:30;
+}
+.cargando-barra[hidden]{display:none}
+
+/* ── Mapa: alto adaptable ────────────────────────────────────────────────── */
+/* Antes el SVG tenía alto fijo y en móvil quedaba una franja diminuta o una
+   columna larguísima. Ahora se limita por la altura de la ventana. */
+#mapa-lienzo .mapa{max-height:min(78vh,760px);width:100%}
+
+/* ── Toque táctil ────────────────────────────────────────────────────────── */
+/* En pantalla táctil no hay cursor que pasear: el globo del mapa aparece al
+   tocar, y las filas de tabla necesitan altura suficiente para el dedo. */
+@media(pointer:coarse){
+  .tabla th,.tabla td{padding:0.7rem 0.625rem}
+  .pestana{padding:0.85rem 1rem}
+  .campo__control{font-size:16px}  /* evita el zoom automático de iOS */
+}
+
+/* ── Reduce el salto de la barra pegajosa en pantallas bajas ─────────────── */
+@media(max-height:620px){
+  .controles{position:static}
+}

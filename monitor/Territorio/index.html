@@ -17,7 +17,7 @@
 <meta name="twitter:card" content="summary_large_image">
 
 <link rel="icon" href="../../assets/img/favicon.svg" type="image/svg+xml">
-<link rel="stylesheet" href="estilos.css?v=1.0.0">
+<link rel="stylesheet" href="estilos.css?v=1.1.0">
 </head>
 <body>
 
@@ -60,9 +60,12 @@
   <div class="envoltura">
     <div class="controles__reja">
 
-      <div class="campo">
-        <label class="campo__rotulo" for="c-indicador">Indicador</label>
-        <select class="campo__control" id="c-indicador"></select>
+      <div class="campo campo--indicador">
+        <label class="campo__rotulo" for="c-filtro">Indicador <span id="c-cuenta" class="campo__cuenta"></span></label>
+        <input class="campo__control campo__control--busca" id="c-filtro" type="search"
+               autocomplete="off" placeholder="Filtrar: pobreza, agua, analfabetismo…"
+               aria-controls="c-indicador">
+        <select class="campo__control" id="c-indicador" aria-label="Indicador"></select>
       </div>
 
       <div class="campo">
@@ -85,6 +88,11 @@
         <select class="campo__control" id="c-sub"></select>
       </div>
 
+      <div class="campo">
+        <span class="campo__rotulo" aria-hidden="true">&nbsp;</span>
+        <button class="boton boton--claro" id="c-limpiar" type="button">Limpiar</button>
+      </div>
+
     </div>
   </div>
 </div>
@@ -95,6 +103,8 @@
     <ul class="pestanas__lista" id="pestanas" role="tablist"></ul>
   </div>
 </nav>
+
+<p class="cargando-barra" id="cargando" hidden role="status">Cargando datos del tema…</p>
 
 <main class="envoltura">
 
@@ -293,6 +303,6 @@
   </div>
 </noscript>
 
-<script src="app.js?v=1.0.0" defer></script>
+<script src="app.js?v=1.1.0" defer></script>
 </body>
 </html>

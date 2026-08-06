@@ -101,9 +101,15 @@
 
   /* Devuelve una promesa con el índice del tema: mapa de
      ind_id → { terr_id → { 'anio|zona': [valor, cv] } } */
+  function cargando(si) {
+    var b = $('#cargando');
+    if (b) b.hidden = !si;
+  }
+
   function tema(id) {
     if (TEMAS_CARGADOS[id]) return Promise.resolve(TEMAS_CARGADOS[id]);
     if (pidiendo[id]) return pidiendo[id];
+    cargando(true);
     pidiendo[id] = traer('datos/tema-' + id + '.json').then(function (j) {
       var idx = {};
       j.filas.forEach(function (f) {
@@ -114,7 +120,12 @@
       });
       TEMAS_CARGADOS[id] = idx;
       delete pidiendo[id];
+      cargando(false);
       return idx;
+    }).catch(function (e) {
+      delete pidiendo[id];
+      cargando(false);
+      throw e;
     });
     return pidiendo[id];
   }
@@ -205,17 +216,35 @@
     sf.value = E.ficha;
   }
 
+  /* Con 1.252 indicadores, una lista desplegable sola es inservible: nadie
+     recorre esa cantidad de opciones. El campo de texto de arriba la recorta
+     en vivo. Se conserva un <select> de verdad —y no un componente propio—
+     para no romper el teclado ni los lectores de pantalla. */
   function pintarIndicadores() {
     var t = $('#c-tema').value;
+    var q = plano(($('#c-filtro') || {}).value || '');
     var si = $('#c-indicador');
     si.innerHTML = '';
+
+    var n = 0;
     D.indicadores.forEach(function (ind, i) {
       if (t !== '' && String(ind[0]) !== t) return;
+      if (q && plano(ind[1]).indexOf(q) === -1 && plano(D.temas[ind[0]]).indexOf(q) === -1) return;
       var marca = ind[2] === 3 ? '' : (ind[2] === 1 ? ' [solo 2021]' : ' [solo 2023]');
       si.appendChild(new Option(ind[1] + marca, i));
+      n++;
     });
-    if (!si.querySelector('option[value="' + E.ind + '"]') && si.options.length) {
-      E.ind = parseInt(si.options[0].value, 10);
+
+    var cuenta = $('#c-cuenta');
+    if (cuenta) cuenta.textContent = n === D.indicadores.length ? '' : '· ' + n + ' de ' + D.indicadores.length;
+    si.setAttribute('data-vacio', n ? '0' : '1');
+
+    /* Si el indicador activo se cayó del filtro NO se cambia: se perdería lo
+       que el usuario está mirando por escribir una letra. Solo se reemplaza
+       cuando el filtro deja algo y el activo ya no está en ninguna parte. */
+    if (!si.querySelector('option[value="' + E.ind + '"]')) {
+      if (n) { E.ind = parseInt(si.options[0].value, 10); }
+      else { si.appendChild(new Option(D.indicadores[E.ind][1] + ' (fuera del filtro)', E.ind)); }
     }
     si.value = E.ind;
 
@@ -1017,6 +1046,39 @@
     $('#c-buscar').addEventListener('input', function () {
       clearTimeout(reloj); reloj = setTimeout(dibujarExplorar, 120);
     });
+
+    /* El filtro reordena hasta 1.252 opciones: se espera a que deje de
+       escribir en vez de rehacer la lista en cada tecla. */
+    var relojFiltro = null;
+    $('#c-filtro').addEventListener('input', function () {
+      clearTimeout(relojFiltro);
+      relojFiltro = setTimeout(function () { pintarIndicadores(); pintarAnios(); }, 140);
+    });
+    $('#c-filtro').addEventListener('keydown', function (e) {
+      if (e.key === 'Enter') {
+        e.preventDefault();
+        var si = $('#c-indicador');
+        if (si.options.length) { E.ind = parseInt(si.options[0].value, 10); si.value = E.ind; pintarAnios(); refrescar(); }
+      }
+      if (e.key === 'Escape' && e.target.value) {
+        e.target.value = ''; pintarIndicadores(); pintarAnios();
+      }
+    });
+
+    $('#c-limpiar').addEventListener('click', function () {
+      E.sub = ''; E.zona = 0; E.comparar = []; E.indY = null;
+      $('#c-filtro').value = ''; $('#c-tema').value = '';
+      $('#c-sub').value = ''; $('#c-zona').value = '0';
+      pintarIndicadores(); pintarAnios(); refrescar();
+      $('#c-filtro').focus();
+    });
+
+    /* En táctil no hay «mouseleave»: el globo se quedaría pegado. Se cierra
+       al tocar cualquier otro punto y al hacer scroll. */
+    document.addEventListener('touchstart', function (e) {
+      if (!e.target.closest || !e.target.closest('.mapa__mun')) ocultarGlobo();
+    }, { passive: true });
+    window.addEventListener('scroll', ocultarGlobo, { passive: true });
 
     window.addEventListener('hashchange', function () {
       var v = location.hash.slice(1);
