@@ -16,8 +16,9 @@
                                  ni un atributo style= en este archivo, y los
                                  anchos de las barras los aplica el JS por
                                  CSSOM (que la CSP sí permite)
-       frame-src                 solo GitHub Pages y Power BI: son los únicos
-                                 orígenes desde los que se incrusta un tablero
+       frame-src 'self' + BI     los tableros se sirven desde este mismo
+                                 dominio (/monitor/…); Power BI queda autorizado
+                                 para incrustaciones futuras
        form-action 'self'        el formulario no puede reapuntarse a otro host
        object-src  'none'        sin Flash, sin applets, sin <embed>
 
@@ -35,7 +36,7 @@
   style-src 'self' https://fonts.googleapis.com;
   font-src 'self' https://fonts.gstatic.com;
   script-src 'self' 'sha256-6goGRuUkX1iKU2nuNhxLtDXpBWPuk7k10pEnOBayEcM=';
-  frame-src https://smorales0510.github.io https://*.github.io https://app.powerbi.com https://*.powerbi.com;
+  frame-src 'self' https://app.powerbi.com https://*.powerbi.com;
   connect-src 'self';
   frame-ancestors 'none';
   upgrade-insecure-requests">
