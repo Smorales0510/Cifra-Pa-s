@@ -746,7 +746,7 @@ h1,h2,h3,.seccion__titulo,.tarjeta__titulo,.paper__titulo,.panel__titulo,.cita{
 .lienzo__mensaje{text-align:center}
 .lienzo__mensaje .antetitulo{margin:0 0 0.375rem}
 .lienzo__nota{font-size:0.8125rem;color:#A9C0D6;margin:0}
-#btn-cargar-tablero{margin-top:1rem}
+#btn-cargar-tablero{margin-top:1.125rem}
 
 /* Aviso de orientación: solo en pantalla chica y en vertical. Va con el icono
    de teléfono girando —un gesto, no un adorno— porque es la única instrucción
@@ -808,85 +808,110 @@ h1,h2,h3,.seccion__titulo,.tarjeta__titulo,.paper__titulo,.panel__titulo,.cita{
   overflow:hidden;
 }
 
-/* Índice de departamentos: atajo directo a una tarjeta sin tener que
-   arrastrar diez veces. Son enlaces reales, así que funcionan sin JS. */
-.chips-caja{margin-bottom:clamp(1.5rem,3vw,2rem)}
-.chips{display:flex;flex-wrap:wrap;gap:0.5rem}
-.chip{
+/* ── Control de la radiografía ──────────────────────────────────────────── */
+/* Buscador y orden. Reemplazan al índice de 33 chips y al carrusel: con 33
+   fichas, escribir tres letras es más rápido que recorrer una lista alfabética,
+   y poder ordenar por desempleo o informalidad convierte una galería en una
+   herramienta de comparación.
+   La barra la enciende el JavaScript (nace con hidden): sin scripts no habría
+   nada que filtrar, y un buscador muerto es peor que ninguno. */
+.radiografia__control{
+  display:flex;
+  flex-wrap:wrap;
+  align-items:flex-end;
+  gap:clamp(0.75rem,2vw,1.25rem);
+  margin-bottom:clamp(1.5rem,3vw,2rem);
+  padding-bottom:clamp(1rem,2vw,1.25rem);
+  border-bottom:1px solid rgba(255,255,255,.14);
+}
+.radiografia__control[hidden]{display:none}
+
+.busca{flex:1 1 16rem;min-width:0}
+.ordena{flex:0 1 15rem;min-width:0}
+
+.busca__etiqueta,.ordena__etiqueta{
   display:block;
-  padding:0.375rem 0.75rem;
-  border:1px solid rgba(255,255,255,.18);
-  background:rgba(255,255,255,.04);
-  color:var(--claro-suave);
+  margin-bottom:0.375rem;
   font-family:var(--mono);
-  font-size:0.75rem;
-  letter-spacing:0.04em;
-  text-decoration:none;
-  transition:background-color .15s linear,color .15s linear,border-color .15s linear;
-}
-.chip:hover{background:rgba(255,255,255,.12);border-color:var(--claro-suave);color:#FFF}
-.chip[aria-current="true"]{
-  background:#FFF;border-color:#FFF;color:var(--azul-profundo);font-weight:700;
-}
-
-/* ── Carrusel ───────────────────────────────────────────────────────────── */
-/* Una pista con desplazamiento nativo y anclaje: el navegador se encarga del
-   gesto táctil, del impulso y de la barra. El JS solo agrega los botones y la
-   cuenta; si falla, la sección sigue siendo arrastrable. */
-.carrusel__pista{
-  display:grid;
-  grid-auto-flow:column;
-  grid-auto-columns:minmax(18.5rem,22rem);
-  gap:clamp(1rem,2vw,1.25rem);
-  overflow-x:auto;
-  overscroll-behavior-x:contain;
-  scroll-snap-type:x mandatory;
-  scroll-padding-inline:0;
-  /* Aire arriba y abajo: sin él, overflow recorta los 4 px que sube la
-     tarjeta al pasar el cursor y la sombra queda cortada en seco. */
-  padding-block:0.75rem 1.25rem;
-  /* Espacio para que la última tarjeta pueda anclarse a la izquierda. */
-  scrollbar-color:rgba(255,255,255,.35) transparent;
-  scrollbar-width:thin;
-}
-.carrusel__pista::-webkit-scrollbar{height:6px}
-.carrusel__pista::-webkit-scrollbar-thumb{background:rgba(255,255,255,.3)}
-.carrusel__pista::-webkit-scrollbar-track{background:rgba(255,255,255,.07)}
-.carrusel__pista:focus-visible{outline:2px solid var(--cifra);outline-offset:4px}
-
-@media (min-width:1080px){
-  .carrusel__pista{grid-auto-columns:minmax(23rem,26rem)}
-}
-
-.carrusel__mandos{
-  display:flex;align-items:center;gap:1rem;
-  margin-top:1rem;
-}
-.carrusel__flecha{
-  padding:0.5rem 1rem;
-  background:transparent;
-  border:1px solid rgba(255,255,255,.22);
+  font-size:0.6875rem;
+  letter-spacing:0.08em;
+  text-transform:uppercase;
   color:var(--claro-suave);
-  font-family:var(--texto);
-  font-size:0.8125rem;
-  font-weight:500;
-  cursor:pointer;
-  transition:background-color .15s linear,color .15s linear,border-color .15s linear;
 }
-.carrusel__flecha:hover:not([disabled]){background:rgba(255,255,255,.1);border-color:#FFF;color:#FFF}
-.carrusel__flecha[disabled]{opacity:.4;cursor:default}
-.carrusel__cuenta{
+
+.busca__campo,.ordena__campo{
+  width:100%;
+  padding:0.625rem 0.75rem;
+  background:rgba(255,255,255,.06);
+  border:1px solid rgba(255,255,255,.2);
+  border-radius:0;
+  color:#FFF;
+  font-family:var(--texto);
+  font-size:0.9375rem;
+  transition:border-color .15s linear,background-color .15s linear;
+}
+.busca__campo::placeholder{color:rgba(255,255,255,.45)}
+.busca__campo:hover,.ordena__campo:hover{background:rgba(255,255,255,.1)}
+.busca__campo:focus-visible,.ordena__campo:focus-visible{
+  outline:2px solid var(--cifra);
+  outline-offset:2px;
+  border-color:var(--cifra);
+}
+/* La flecha del select la dibuja el sistema y en fondo oscuro suele quedar
+   negra sobre azul. Se sustituye por una propia, en SVG embebido. */
+.ordena__campo{
+  appearance:none;
+  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 12 8'%3E%3Cpath d='M1 1.5 6 6.5l5-5' fill='none' stroke='%23FFFFFF' stroke-width='1.6'/%3E%3C/svg%3E");
+  background-repeat:no-repeat;
+  background-position:right 0.75rem center;
+  background-size:0.75rem;
+  padding-right:2.25rem;
+}
+.ordena__campo option{background:var(--azul-profundo);color:#FFF}
+
+.radiografia__cuenta{
+  flex:0 0 auto;
   margin-left:auto;
+  padding-bottom:0.625rem;
   font-family:var(--mono);
   font-size:var(--t-meta);
   font-variant-numeric:tabular-nums;
   color:var(--claro-suave);
 }
 
+/* ── Rejilla de fichas ──────────────────────────────────────────────────── */
+/* Antes era una pista horizontal con anclaje. El problema no era el carrusel
+   en sí: era que comparar Chocó con Antioquia obligaba a recordar el que ya
+   había pasado. En rejilla, las dos se ven a la vez. */
+.radiografia__rejilla{
+  display:grid;
+  grid-template-columns:minmax(0,1fr);
+  gap:clamp(1rem,2vw,1.25rem);
+  padding-block:0.75rem 1.25rem;
+}
+@media (min-width:720px){
+  .radiografia__rejilla{grid-template-columns:repeat(2,minmax(0,1fr))}
+}
+@media (min-width:1080px){
+  .radiografia__rejilla{grid-template-columns:repeat(3,minmax(0,1fr))}
+}
+
+/* Ficha oculta por el buscador. Se usa un atributo y no una clase para que el
+   estado sea legible en el inspector y en las herramientas de accesibilidad. */
+.territorio[data-oculta]{display:none}
+
+.radiografia__vacio{
+  margin-top:0.5rem;
+  padding:1.25rem;
+  border:1px dashed rgba(255,255,255,.25);
+  color:var(--claro-suave);
+  font-size:0.9375rem;
+}
+.radiografia__vacio[hidden]{display:none}
+
 /* ── Tarjeta de departamento ────────────────────────────────────────────── */
 .territorio{
   display:flex;flex-direction:column;
-  scroll-snap-align:start;
   padding:clamp(1.25rem,2.5vw,1.625rem);
   background:rgba(255,255,255,.05);
   border:1px solid rgba(255,255,255,.13);
@@ -1401,15 +1426,16 @@ h1,h2,h3,.seccion__titulo,.tarjeta__titulo,.paper__titulo,.panel__titulo,.cita{
    ═══════════════════════════════════════════════════════════════════════ */
 @media print{
   .barra,.saltar,.portal__rail,.panel__vistas,.lienzo,.formulario,.botonera,
-  .aviso-rotar,.chips-caja,.carrusel__mandos{display:none}
+  .aviso-rotar,.radiografia__control{display:none}
   .portada,.seccion--oscura,.seccion--radiografia,.pie{background:#FFF;color:#000}
   .portada__eslogan,.seccion__titulo--claro,.panel__titulo,
   .territorio__nombre,.mini__valor,.sector__nombre,.par__cifra{color:#000}
   .seccion{padding-block:1.5rem}
   a{color:#000}
-  /* En papel el carrusel no se desliza: las diez fichas se apilan y se
-     imprimen enteras, cada una sin partirse entre páginas. */
-  .carrusel__pista{display:block;overflow:visible}
+  /* En papel la rejilla se apila en una columna y cada ficha se imprime
+     entera, sin partirse entre páginas. La barra de control no se imprime. */
+  .radiografia__rejilla{display:block}
+  .radiografia__control{display:none}
   .territorio{
     background:none;border:1px solid #999;box-shadow:none;transform:none;
     margin-bottom:1rem;break-inside:avoid;
