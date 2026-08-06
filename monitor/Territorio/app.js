@@ -464,6 +464,53 @@
     caja.appendChild(t);
   }
 
+  /* Descarga la serie municipal visible tal como está: con su CV, su
+     subregión, el año y la zona. Se arma con Blob y no con un endpoint,
+     porque el sitio es estático y no hay servidor que pueda generarlo. */
+  function descargarCSV(serie, prop) {
+    var ind = indicadorActivo();
+    var cab = ['codigo', 'municipio', 'subregion', 'indicador', 'tema',
+               'anio', 'zona', 'valor', 'unidad', 'cv_pct'];
+    var filas = [cab.join(',')];
+    serie.forEach(function (d) {
+      filas.push([
+        D.territorios[d.t][0],
+        '"' + d.nom.replace(/"/g, '""') + '"',
+        '"' + d.sub + '"',
+        '"' + ind[1].replace(/"/g, '""') + '"',
+        '"' + D.temas[ind[0]] + '"',
+        D.anios[E.anio],
+        D.zonas[E.zona],
+        d.v == null ? '' : d.v,
+        prop ? 'proporcion_0_1' : 'valor_original',
+        d.cv == null ? '' : d.cv
+      ].join(','));
+    });
+    filas.push('');
+    filas.push('# Fuente: ' + D.fuentes.ecv);
+    filas.push('# Elaboracion: Cifra Pais Analitica S.A.S. · cifrapais.com');
+    filas.push('# CV = coeficiente de variacion. Por encima de 15 % la cifra no admite lectura fina.');
+
+    // El BOM hace que Excel en Windows abra las tildes bien.
+    var blob = new Blob(['\ufeff' + filas.join('\n')], { type: 'text/csv;charset=utf-8' });
+    var url = URL.createObjectURL(blob);
+    var a = document.createElement('a');
+    a.href = url;
+    a.download = 'cifrapais-' + plano(ind[1]).replace(/[^a-z0-9]+/g, '-').slice(0, 50) +
+                 '-' + D.anios[E.anio] + '.csv';
+    document.body.appendChild(a); a.click();
+    document.body.removeChild(a);
+    setTimeout(function () { URL.revokeObjectURL(url); }, 1000);
+  }
+
+  function botonCSV(serie, prop) {
+    var b = crear('button', 'boton boton--claro', 'Descargar CSV');
+    b.type = 'button';
+    b.style.marginTop = '1rem';
+    b.addEventListener('click', function () { descargarCSV(serie, prop); });
+    return b;
+  }
+
   function pieFuente(serie) {
     var n = serie.filter(function (d) { return d.v != null; }).length;
     var altos = serie.filter(function (d) { return d.cv != null && d.cv > 15; }).length;
@@ -708,6 +755,18 @@
         svg.appendChild(tx);
       });
       l.appendChild(svg);
+
+      /* Leyenda: sin ella los nueve colores del gráfico son decoración. */
+      var leyenda = crear('div', 'leyenda');
+      D.subregiones.forEach(function (s) {
+        var e = crear('span', 'leyenda__item');
+        var p = crear('span', 'leyenda__punto');
+        p.style.background = COLOR_SUB[s];
+        e.appendChild(p);
+        e.appendChild(document.createTextNode(s));
+        leyenda.appendChild(e);
+      });
+      l.appendChild(leyenda);
 
       // Correlación de Pearson, con su advertencia al lado.
       var n = puntos.length;
@@ -976,13 +1035,60 @@
 
   /* ═══ 12 · ARRANQUE ═════════════════════════════════════════════════════ */
 
+  /* El estado entero se serializa en el hash. Así un enlace copiado de la
+     barra de direcciones reabre exactamente la misma vista: mismo indicador,
+     mismo año, misma zona, misma subregión y los mismos territorios en la
+     comparación. */
+  function guardarEstado() {
+    var p = ['tab=' + E.vista, 'ind=' + E.ind, 'anio=' + E.anio, 'zona=' + E.zona];
+    if (E.sub) p.push('sub=' + encodeURIComponent(E.sub));
+    if (E.comparar.length) p.push('cmp=' + E.comparar.join('.'));
+    if (E.indY != null && E.indY !== E.ind) p.push('y=' + E.indY);
+    if (E.ficha) p.push('mun=' + E.ficha);
+    var nuevo = '#' + p.join('&');
+    if (location.hash !== nuevo) history.replaceState(null, '', nuevo);
+  }
+
+  function leerEstado() {
+    var h = location.hash.slice(1);
+    if (!h) return null;
+    // Compatibilidad con los enlaces viejos, que solo llevaban el nombre.
+    if (h.indexOf('=') === -1) return VISTAS.some(function (x) { return x[0] === h; }) ? { tab: h } : null;
+    var o = {};
+    h.split('&').forEach(function (par) {
+      var k = par.split('='); o[k[0]] = decodeURIComponent(k.slice(1).join('='));
+    });
+    return o;
+  }
+
+  function aplicarEstado(o) {
+    if (!o) return;
+    function num(k, max) {
+      var v = parseInt(o[k], 10);
+      return (!isNaN(v) && v >= 0 && v < max) ? v : null;
+    }
+    var i = num('ind', D.indicadores.length); if (i !== null) E.ind = i;
+    var a = num('anio', D.anios.length); if (a !== null) E.anio = a;
+    var z = num('zona', D.zonas.length); if (z !== null) E.zona = z;
+    var m = num('mun', 125); if (m !== null) E.ficha = m;
+    var y = num('y', D.indicadores.length); if (y !== null) E.indY = y;
+    if (o.sub && D.subregiones.indexOf(o.sub) !== -1) E.sub = o.sub;
+    if (o.cmp) {
+      E.comparar = o.cmp.split('.').map(Number).filter(function (t) {
+        return !isNaN(t) && t >= 0 && t < D.territorios.length;
+      }).slice(0, 8);
+    }
+    if (o.tab && VISTAS.some(function (x) { return x[0] === o.tab; })) E.vista = o.tab;
+  }
+
   function irA(v) {
     E.vista = v;
     $$('.pestana').forEach(function (b) {
       b.setAttribute('aria-selected', String(b.dataset.v === v));
+      b.tabIndex = b.dataset.v === v ? 0 : -1;
     });
     VISTAS.forEach(function (x) { $('#p-' + x[0]).hidden = x[0] !== v; });
-    if (location.hash.slice(1) !== v) history.replaceState(null, '', '#' + v);
+    guardarEstado();
     refrescar();
   }
 
@@ -993,12 +1099,20 @@
     var t = indicadorActivo()[0];
     tema(t).then(function (idx) {
       refrescando = false;
+      guardarEstado();
       switch (E.vista) {
         case 'resumen': dibujarResumen(idx); break;
         case 'mapa': dibujarMapa(idx); break;
         case 'ranking':
-          tablaRanking($('#tabla-ranking'), serieMunicipal(idx), esProporcion(serieMunicipal(idx)), false);
-          $('#ranking-fuente').textContent = pieFuente(serieMunicipal(idx));
+          var s = serieMunicipal(idx), p = esProporcion(s);
+          tablaRanking($('#tabla-ranking'), s, p, false);
+          var pie = $('#ranking-fuente');
+          pie.textContent = pieFuente(s);
+          var previo = $('#ranking-csv');
+          if (previo) previo.remove();
+          var bt = botonCSV(s, p);
+          bt.id = 'ranking-csv';
+          pie.parentNode.insertBefore(bt, pie);
           break;
         case 'comparar': dibujarComparar(idx); break;
         case 'subregiones': dibujarSubregiones(idx); break;
@@ -1025,6 +1139,18 @@
       b.setAttribute('role', 'tab');
       b.setAttribute('aria-selected', 'false');
       b.addEventListener('click', function () { irA(v[0]); });
+      /* Un tablist se recorre con flechas, no con Tab: así lo espera quien
+         navega por teclado y así lo exige el patrón ARIA. */
+      b.addEventListener('keydown', function (e) {
+        var i = VISTAS.findIndex(function (x) { return x[0] === E.vista; });
+        var d = e.key === 'ArrowRight' ? 1 : (e.key === 'ArrowLeft' ? -1 : 0);
+        if (e.key === 'Home') { e.preventDefault(); irA(VISTAS[0][0]); $('#t-' + VISTAS[0][0]).focus(); return; }
+        if (e.key === 'End') { e.preventDefault(); irA(VISTAS[VISTAS.length-1][0]); $('#t-' + VISTAS[VISTAS.length-1][0]).focus(); return; }
+        if (!d) return;
+        e.preventDefault();
+        var n = (i + d + VISTAS.length) % VISTAS.length;
+        irA(VISTAS[n][0]); $('#t-' + VISTAS[n][0]).focus();
+      });
       li.appendChild(b); lista.appendChild(li);
     });
 
@@ -1080,9 +1206,15 @@
     }, { passive: true });
     window.addEventListener('scroll', ocultarGlobo, { passive: true });
 
+    /* Botón atrás del navegador: se relee el estado entero, no solo la
+       pestaña. */
     window.addEventListener('hashchange', function () {
-      var v = location.hash.slice(1);
-      if (VISTAS.some(function (x) { return x[0] === v; })) irA(v);
+      var o = leerEstado();
+      if (!o) return;
+      aplicarEstado(o);
+      pintarIndicadores(); pintarAnios();
+      $('#c-zona').value = E.zona; $('#c-sub').value = E.sub;
+      irA(E.vista);
     });
   }
 
@@ -1099,10 +1231,13 @@
     var i0 = D.indicadores.findIndex(function (i) { return i[2] === 3; });
     E.ind = i0 >= 0 ? i0 : 0;
 
+    aplicarEstado(leerEstado());
+
     pintarSelectores();
+    $('#c-zona').value = E.zona;
+    $('#c-sub').value = E.sub;
     conectar();
-    var v = location.hash.slice(1);
-    irA(VISTAS.some(function (x) { return x[0] === v; }) ? v : 'resumen');
+    irA(E.vista);
   }).catch(function (err) {
     document.querySelector('main').innerHTML =
       '<div class="tarjeta"><p class="aviso aviso--riesgo">No se pudieron cargar los datos: ' +

@@ -214,3 +214,26 @@ select.campo__control{appearance:none;
 @media(max-height:620px){
   .controles{position:static}
 }
+
+/* ── Leyenda de subregiones ──────────────────────────────────────────────── */
+.leyenda{display:flex;flex-wrap:wrap;gap:0.5rem 1rem;margin-top:0.875rem;
+  font-family:var(--mono);font-size:0.6875rem;color:var(--suave)}
+.leyenda__item{display:inline-flex;align-items:center;gap:0.375rem}
+.leyenda__punto{width:10px;height:10px;flex:none;border-radius:50%}
+
+/* ── Enfoque visible en todo lo interactivo ──────────────────────────────── */
+/* Quien navega con teclado tiene que saber dónde está parado. El anillo usa el
+   amarillo de marca para que se distinga sobre fondo claro y sobre el azul. */
+a:focus-visible,button:focus-visible,select:focus-visible,
+input:focus-visible,[tabindex]:focus-visible{
+  outline:2px solid var(--cifra);outline-offset:2px;
+}
+.mapa__mun:focus-visible{outline:none;stroke:var(--cifra);stroke-width:2.4}
+
+/* ── Salto al contenido ──────────────────────────────────────────────────── */
+.saltar{
+  position:absolute;left:-9999px;top:0;z-index:100;
+  background:var(--cifra);color:var(--registro);padding:0.6rem 1rem;
+  font-weight:700;text-decoration:none;
+}
+.saltar:focus{left:0}
