@@ -10,7 +10,7 @@
      2. Monitor  — rail de categorías, pestañas de vista, carga diferida.
      3. Barra    — menú en móvil y sección activa.
      4. Cifras   — conteo de los KPI al entrar en pantalla.
-     5. Territorios — carrusel, índice y barras de la radiografía regional.
+     5. Territorios — buscador, orden y barras de la radiografía regional.
      6. Formulario — validación, estado de envío y trampa antispam.
 
    La CSP del sitio no admite 'unsafe-inline' ni en script-src ni en
@@ -173,10 +173,13 @@
     var activo = null;   // tablero
     var vista  = null;   // vista dentro del tablero
 
-    /* En celular vertical no se descarga el tablero solo. La GEIH pesa más de
-       un mega y ahí no se lee: primero manda la fila de KPI, y el tablero se
-       abre si el usuario lo pide. En horizontal o en pantalla grande, carga
-       como siempre. */
+    /* El tablero NO se descarga solo, en ningún tamaño de pantalla.
+       Cada tablero pesa entre 700 KB y 1,4 MB de HTML con los datos adentro, y
+       al incrustarlo la pestaña se queda sin responder varios segundos: medido
+       en cifrapais.com, la página quedaba congelada mientras el iframe parseaba.
+       Quien entra al Monitor primero lee la fila de KPI, que es la respuesta
+       rápida; el tablero completo se abre cuando lo pide.
+       De paso, quien nunca baja hasta acá no descarga un mega y medio. */
     var esPantallaChica = window.matchMedia('(max-width: 760px) and (orientation: portrait)');
 
     function mostrarEspera(rotulo, nota, conBoton) {
@@ -287,31 +290,18 @@
       btnPestana.removeAttribute('aria-disabled');
       btnPestana.href = url;
 
-      if (esPantallaChica.matches) {
-        elMarco.removeAttribute('src');
-        mostrarEspera('Tablero listo para abrir',
-          'Pesa varios megas y se lee mejor en horizontal. Los indicadores de arriba ya están al día.',
-          true);
-        return;
-      }
-
-      incrustar(url);
+      elMarco.removeAttribute('src');
+      mostrarEspera('Tablero listo para abrir',
+        esPantallaChica.matches
+          ? 'Pesa varios megas y se lee mejor en horizontal. Los indicadores de arriba ya están al día.'
+          : 'Pesa varios megas: se abre cuando lo pidas, para no trabar la página. Los indicadores de arriba ya están al día.',
+        true);
     }
 
     if (btnCargar) {
       btnCargar.addEventListener('click', function () {
         if (vista && vista.url) incrustar(vista.url);
       });
-    }
-
-    // Al girar el equipo, el tablero pendiente se incrusta sin pedir nada más.
-    var alCambiarPantalla = function (e) {
-      if (!e.matches && vista && vista.url && !elMarco.getAttribute('src')) incrustar(vista.url);
-    };
-    if (esPantallaChica.addEventListener) {
-      esPantallaChica.addEventListener('change', alCambiarPantalla);
-    } else if (esPantallaChica.addListener) {
-      esPantallaChica.addListener(alCambiarPantalla);   // Safari < 14
     }
 
     function verVista(idVista, sinHistorial) {
@@ -500,19 +490,28 @@
 
   /* ═════════════════════════════════════════════════════════════════════════
      5 · INSIGHTS TERRITORIALES
-     Las cifras están escritas en el HTML; acá solo se agrega lo que no puede
-     estar escrito: el ancho de las barras, los botones del carrusel y el
-     resaltado del departamento visible en el índice.
+     Las cifras están escritas en el HTML; acá se agrega lo que no puede estar
+     escrito: el ancho de las barras, el buscador y el orden de la rejilla.
+
+     Antes esto era un carrusel con un índice de 33 chips. Se cambió porque
+     comparar dos departamentos obligaba a recordar el que ya había pasado, y
+     porque encontrar uno exigía recorrer una lista alfabética entera. La
+     rejilla los muestra a todos; el buscador y el orden la vuelven consultable.
+
+     Todo es progresivo: la barra de control nace oculta en el HTML y solo se
+     enciende acá. Sin JavaScript quedan las 33 fichas en orden alfabético, con
+     sus cifras escritas, que es exactamente lo que ve un buscador.
      ═════════════════════════════════════════════════════════════════════ */
   (function () {
-    var pista = $('#territorios-pista');
-    if (!pista) return;
+    var rejilla = $('#territorios-pista');
+    if (!rejilla) return;
 
-    var tarjetas = Array.prototype.slice.call(pista.querySelectorAll('.territorio'));
-    var chips    = Array.prototype.slice.call(document.querySelectorAll('#territorios-chips .chip'));
-    var btnAntes = $('#terr-antes');
-    var btnSigue = $('#terr-sigue');
-    var cuenta   = $('#terr-cuenta');
+    var fichas  = Array.prototype.slice.call(rejilla.querySelectorAll('.territorio'));
+    var control = $('#terr-control');
+    var campo   = $('#terr-busca');
+    var orden   = $('#terr-orden');
+    var cuenta  = $('#terr-cuenta');
+    var vacio   = $('#terr-vacio');
 
     /* Barras -------------------------------------------------------------- */
     /* El ancho se aplica por CSSOM y no por atributo style= en el marcado:
@@ -531,7 +530,7 @@
     if ('IntersectionObserver' in window && !sinMovimiento) {
       /* Se dibujan al entrar en pantalla: el crecimiento es lo que hace
          comparables dos barras que están una debajo de la otra.
-         Se observa la tarjeta y no cada barra: la barra arranca con ancho 0 y
+         Se observa la ficha y no cada barra: la barra arranca con ancho 0 y
          un elemento sin área nunca alcanza un umbral mayor que cero, así que
          el observador no dispararía jamás. */
       var vigiaBarras = new IntersectionObserver(function (entradas, obs) {
@@ -541,82 +540,82 @@
           dibujar(e.target);
         });
       }, { threshold: 0 });
-      tarjetas.forEach(function (t) { vigiaBarras.observe(t); });
+      fichas.forEach(function (t) { vigiaBarras.observe(t); });
     } else {
-      dibujar(pista);
+      dibujar(rejilla);
     }
 
-    /* Carrusel ------------------------------------------------------------ */
-    function paso() {
-      // Un avance = una tarjeta + su separación. Se mide del DOM en vez de
-      // fijarlo, porque el ancho de tarjeta cambia con el punto de quiebre.
-      if (tarjetas.length < 2) return pista.clientWidth;
-      return tarjetas[1].offsetLeft - tarjetas[0].offsetLeft;
+    /* Sin los controles no hay nada más que hacer: las fichas ya están. */
+    if (!control || !campo || !orden) return;
+    control.hidden = false;
+
+    /* Búsqueda ------------------------------------------------------------ */
+    /* Se compara sin tildes: quien escribe «choco» espera encontrar Chocó, y
+       quien escribe «Nariño» también. normalize('NFD') separa la letra de su
+       acento y el rango \u0300-\u036f borra el acento suelto. */
+    function plano(t) {
+      return (t || '').toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '').trim();
     }
 
-    function indiceVisible() {
-      var p = paso();
-      return p ? Math.round(pista.scrollLeft / p) : 0;
-    }
+    fichas.forEach(function (f) {
+      var nombre = f.querySelector('.territorio__nombre');
+      f._busca = plano((nombre ? nombre.textContent : '') + ' ' + (f.getAttribute('data-busca') || ''));
+    });
 
-    function mover(dir) {
-      pista.scrollBy({ left: dir * paso(), behavior: sinMovimiento ? 'auto' : 'smooth' });
-    }
+    /* Orden --------------------------------------------------------------- */
+    /* Alfabético con localeCompare para que Á vaya con A y Ñ después de N.
+       El resto son indicadores: de mayor a menor, porque quien ordena por
+       desempleo quiere ver primero dónde está el problema. */
+    var CRITERIOS = {
+      nombre: function (a, b) {
+        return a.querySelector('.territorio__nombre').textContent
+          .localeCompare(b.querySelector('.territorio__nombre').textContent, 'es');
+      }
+    };
+    ['desempleo', 'informalidad', 'ocupacion', 'brecha', 'ingreso'].forEach(function (clave) {
+      CRITERIOS[clave] = function (a, b) {
+        return parseFloat(b.getAttribute('data-' + clave)) - parseFloat(a.getAttribute('data-' + clave));
+      };
+    });
 
-    function refrescar() {
-      var i = Math.max(0, Math.min(tarjetas.length - 1, indiceVisible()));
-      // Margen de 2 px: el scroll suave rara vez aterriza en el píxel exacto.
-      var alPrincipio = pista.scrollLeft <= 2;
-      var alFinal = pista.scrollLeft + pista.clientWidth >= pista.scrollWidth - 2;
+    function aplicar() {
+      var q = plano(campo.value);
+      var visibles = 0;
 
-      if (btnAntes) btnAntes.disabled = alPrincipio;
-      if (btnSigue) btnSigue.disabled = alFinal;
-      if (cuenta) cuenta.textContent = (i + 1) + ' de ' + tarjetas.length;
-
-      chips.forEach(function (c, j) {
-        if (j === i) { c.setAttribute('aria-current', 'true'); }
-        else { c.removeAttribute('aria-current'); }
+      fichas.forEach(function (f) {
+        var pasa = !q || f._busca.indexOf(q) !== -1;
+        if (pasa) { f.removeAttribute('data-oculta'); visibles++; }
+        else { f.setAttribute('data-oculta', ''); }
       });
+
+      var criterio = CRITERIOS[orden.value] || CRITERIOS.nombre;
+      /* Reordenar el DOM con appendChild sobre una copia ordenada: el
+         navegador mueve los nodos existentes, no los vuelve a crear, así que
+         no se pierde el estado de las barras ya dibujadas. */
+      fichas.slice().sort(criterio).forEach(function (f) { rejilla.appendChild(f); });
+
+      if (vacio) vacio.hidden = visibles > 0;
+      if (cuenta) {
+        cuenta.textContent = visibles === fichas.length
+          ? fichas.length + ' departamentos'
+          : visibles + ' de ' + fichas.length + (visibles === 1 ? ' departamento' : ' departamentos');
+      }
     }
 
-    if (btnAntes) btnAntes.addEventListener('click', function () { mover(-1); });
-    if (btnSigue) btnSigue.addEventListener('click', function () { mover(1); });
-
-    // Las flechas del teclado mueven la pista cuando tiene el foco. Un
-    // carrusel que solo responde al arrastre deja fuera a quien navega con
-    // teclado, que en una entidad pública es más gente de la que se cree.
-    pista.addEventListener('keydown', function (e) {
-      if (e.key === 'ArrowRight') { e.preventDefault(); mover(1); }
-      else if (e.key === 'ArrowLeft') { e.preventDefault(); mover(-1); }
-      else if (e.key === 'Home') { e.preventDefault(); pista.scrollTo({ left: 0 }); }
-      else if (e.key === 'End') { e.preventDefault(); pista.scrollTo({ left: pista.scrollWidth }); }
+    /* Se espera a que deje de escribir: filtrar en cada tecla reordena el DOM
+       33 veces mientras alguien teclea «Cundinamarca». */
+    var reloj = null;
+    campo.addEventListener('input', function () {
+      window.clearTimeout(reloj);
+      reloj = window.setTimeout(aplicar, 120);
     });
-
-    // El índice desplaza la pista en horizontal sin arrastrar la página
-    // entera en vertical, que es lo que haría el salto de ancla por defecto.
-    chips.forEach(function (c) {
-      c.addEventListener('click', function (e) {
-        var destino = document.getElementById(c.getAttribute('href').slice(1));
-        if (!destino) return;
-        e.preventDefault();
-        pista.scrollTo({
-          left: destino.offsetLeft - tarjetas[0].offsetLeft,
-          behavior: sinMovimiento ? 'auto' : 'smooth'
-        });
-        pista.focus();
-      });
+    /* Escape limpia la búsqueda: es lo que hace todo campo de tipo search. */
+    campo.addEventListener('keydown', function (e) {
+      if (e.key === 'Escape' && campo.value) { campo.value = ''; aplicar(); }
     });
+    orden.addEventListener('change', aplicar);
 
-    // El scroll dispara muchas veces por segundo; el trabajo real se hace una
-    // vez por cuadro.
-    var pendiente = false;
-    pista.addEventListener('scroll', function () {
-      if (pendiente) return;
-      pendiente = true;
-      requestAnimationFrame(function () { pendiente = false; refrescar(); });
-    });
-    window.addEventListener('resize', refrescar);
-    refrescar();
+    aplicar();
   }());
 
   /* ═════════════════════════════════════════════════════════════════════════
