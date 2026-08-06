@@ -67,10 +67,10 @@
         { etiqueta: 'Empleo formal', valor: '2,8', sufijo: '%', nota: '± 0,3 · var. anual', destacado: true }
       ],
       vistas: [
-        { id: 'general', nombre: 'Panorama', url: 'https://smorales0510.github.io/GEIH/' },
-        { id: 'informalidad', nombre: 'Informalidad', url: 'https://smorales0510.github.io/GEIH/#informalidad' },
-        { id: 'cuidado', nombre: 'Economía del cuidado', url: 'https://smorales0510.github.io/GEIH/#cuidado' },
-        { id: 'poblaciones', nombre: 'Grupos poblacionales', url: 'https://smorales0510.github.io/GEIH/#poblaciones' }
+        { id: 'general', nombre: 'Panorama', url: 'https://cifrapais.com/monitor/laboral/' },
+        { id: 'informalidad', nombre: 'Informalidad', url: 'https://cifrapais.com/monitor/laboral/#informalidad' },
+        { id: 'cuidado', nombre: 'Economía del cuidado', url: 'https://cifrapais.com/monitor/laboral/#cuidado' },
+        { id: 'poblaciones', nombre: 'Grupos poblacionales', url: 'https://cifrapais.com/monitor/laboral/#poblaciones' }
       ]
     },
     {
@@ -87,7 +87,7 @@
         { etiqueta: 'Participación', valor: '89,4', sufijo: '%', nota: 'mujeres · ± 0,42' }
       ],
       vistas: [
-        { id: 'general', nombre: 'Panorama', url: 'https://smorales0510.github.io/ENUT/' }
+        { id: 'general', nombre: 'Panorama', url: '' }
       ]
     },
     {
