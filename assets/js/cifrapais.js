@@ -87,7 +87,7 @@
         { etiqueta: 'Participación', valor: '89,4', sufijo: '%', nota: 'mujeres · ± 0,42' }
       ],
       vistas: [
-        { id: 'general', nombre: 'Panorama', url: '' }
+        { id: 'general', nombre: 'Panorama', url: 'https://cifrapais.com/monitor/ENUT/' }
       ]
     },
     {
@@ -119,6 +119,25 @@
         { etiqueta: 'Ejecución', valor: '78,6', sufijo: '%', nota: 'meta 85,0' },
         { etiqueta: 'Dependencia SGP', valor: '54,3', sufijo: '%', nota: '± 0,71', destacado: true },
         { etiqueta: 'Efecto en empleo', valor: '0,094', nota: 'coef. · e.e. 0,028' }
+      ],
+      vistas: [
+        { id: 'general', nombre: 'Panorama', url: '' }
+      ]
+    },
+    {
+      /* Piloto municipal. El tablero se sirve desde /monitor/Territorio/ y
+         cubre pobreza, empleo, educación, salud, vivienda y seguridad de un
+         municipio, comparados con el departamento y con el país.
+         Los KPI se completan cuando esté publicado: acá no se escribe una
+         cifra que no se pueda rastrear hasta su fuente (manual §09). */
+      id: 'territorial',
+      nombre: 'Territorial',
+      nota: 'El Carmen de Viboral · piloto',
+      titulo: 'Calidad de vida municipal',
+      corte: 'Encuesta de Calidad de Vida 2021 y 2023 · proyecciones DANE 2026',
+      fuente: 'Fuente: DANE · ECV 2021 y 2023, proyecciones de población 2018–2035 · DNP · elaboración Cifra País',
+      kpis: [
+        { etiqueta: 'Población', valor: '70.734', nota: 'proyección DANE 2026' }
       ],
       vistas: [
         { id: 'general', nombre: 'Panorama', url: '' }
