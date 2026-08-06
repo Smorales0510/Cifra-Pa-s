@@ -1,0 +1,298 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+
+<title>Cifra País Monitor · Calidad de vida en Antioquia</title>
+<meta name="description" content="Encuesta de Calidad de Vida 2021 y 2023 para los 125 municipios y las 9 subregiones de Antioquia, con población, PIB per cápita e Índice de Ciudades Modernas. Mapa, ranking y comparador.">
+<meta name="author" content="Cifra País Analítica S.A.S.">
+<meta name="theme-color" content="#113A5E">
+
+<meta property="og:site_name" content="Cifra País">
+<meta property="og:title" content="Calidad de vida en Antioquia · Cifra País Monitor">
+<meta property="og:description" content="1.252 indicadores de la ECV para los 125 municipios de Antioquia, comparables por subregión, con PIB per cápita e ICM.">
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://cifrapais.com/monitor/Territorio/">
+<meta name="twitter:card" content="summary_large_image">
+
+<link rel="icon" href="../../assets/img/favicon.svg" type="image/svg+xml">
+<link rel="stylesheet" href="estilos.css?v=1.0.0">
+</head>
+<body>
+
+<!-- ══ Cabecera ═══════════════════════════════════════════════════════════ -->
+<header class="cabeza">
+  <div class="envoltura">
+    <div class="cabeza__reja">
+      <a class="marca" href="https://cifrapais.com/">
+        <svg class="marca__simbolo" viewBox="0 0 100 100" aria-hidden="true" focusable="false">
+          <g stroke-linecap="butt">
+            <line x1="20" y1="84" x2="20" y2="54" stroke="#8FB4D6" stroke-width="11"/>
+            <line x1="40" y1="84" x2="40" y2="42" stroke="#A9C8E4" stroke-width="11"/>
+            <line x1="60" y1="84" x2="60" y2="30" stroke="#C9DDEF" stroke-width="11"/>
+            <line x1="80" y1="84" x2="80" y2="16" stroke="#FFFFFF" stroke-width="11"/>
+            <line x1="10" y1="74" x2="90" y2="26" stroke="#E8A317" stroke-width="12"/>
+          </g>
+        </svg>
+        <span>
+          <span class="marca__nombre" translate="no">Cifra País</span>
+          <span class="marca__desc">Monitor · Territorial</span>
+        </span>
+      </a>
+      <p class="cabeza__corte" id="corte">—</p>
+    </div>
+
+    <h1 class="cabeza__titulo">Calidad de vida en <b>Antioquia</b></h1>
+    <p class="cabeza__bajada">
+      Los 125 municipios y las 9 subregiones, con los indicadores de la Encuesta
+      de Calidad de Vida 2021 y 2023. Cada cifra trae su coeficiente de
+      variación: donde la muestra no aguanta la lectura fina, lo dice.
+    </p>
+  </div>
+</header>
+
+<!-- ══ Controles globales ═════════════════════════════════════════════════
+     Un solo juego de controles para todas las vistas: el indicador que se elige
+     acá es el que pinta el mapa, ordena el ranking y alimenta la comparación.
+     Evita tener que reconfigurar cada pestaña por separado.               ══ -->
+<div class="controles">
+  <div class="envoltura">
+    <div class="controles__reja">
+
+      <div class="campo">
+        <label class="campo__rotulo" for="c-indicador">Indicador</label>
+        <select class="campo__control" id="c-indicador"></select>
+      </div>
+
+      <div class="campo">
+        <label class="campo__rotulo" for="c-tema">Tema</label>
+        <select class="campo__control" id="c-tema"></select>
+      </div>
+
+      <div class="campo">
+        <label class="campo__rotulo" for="c-anio">Año</label>
+        <select class="campo__control" id="c-anio"></select>
+      </div>
+
+      <div class="campo">
+        <label class="campo__rotulo" for="c-zona">Zona</label>
+        <select class="campo__control" id="c-zona"></select>
+      </div>
+
+      <div class="campo">
+        <label class="campo__rotulo" for="c-sub">Subregión</label>
+        <select class="campo__control" id="c-sub"></select>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<!-- ══ Pestañas ═══════════════════════════════════════════════════════════ -->
+<nav class="pestanas" aria-label="Vistas del tablero">
+  <div class="envoltura">
+    <ul class="pestanas__lista" id="pestanas" role="tablist"></ul>
+  </div>
+</nav>
+
+<main class="envoltura">
+
+  <!-- ── Resumen ─────────────────────────────────────────────────────────── -->
+  <section class="panel" id="p-resumen" role="tabpanel" aria-labelledby="t-resumen">
+    <div class="reja3" id="resumen-kpis"></div>
+    <div class="tarjeta" style="margin-top:1rem">
+      <h2 class="tarjeta__titulo" id="resumen-titulo">—</h2>
+      <p class="tarjeta__nota" id="resumen-nota">—</p>
+      <div id="resumen-extremos" class="reja3"></div>
+      <p class="fuente" id="resumen-fuente"></p>
+    </div>
+  </section>
+
+  <!-- ── Mapa ────────────────────────────────────────────────────────────── -->
+  <section class="panel" id="p-mapa" role="tabpanel" aria-labelledby="t-mapa" hidden>
+    <div class="reja2">
+      <div class="tarjeta">
+        <h2 class="tarjeta__titulo" id="mapa-titulo">—</h2>
+        <p class="tarjeta__nota">Pasá el cursor por un municipio para ver su cifra; hacé clic para llevarlo a la comparación.</p>
+        <div id="mapa-lienzo"></div>
+        <div class="escala">
+          <span id="escala-min">—</span>
+          <svg class="escala__barra" id="escala-barra" viewBox="0 0 100 10" preserveAspectRatio="none" aria-hidden="true"></svg>
+          <span id="escala-max">—</span>
+        </div>
+        <p class="fuente" id="mapa-fuente"></p>
+      </div>
+      <div class="tarjeta">
+        <h2 class="tarjeta__titulo">Ranking</h2>
+        <p class="tarjeta__nota">De mayor a menor.</p>
+        <div class="tabla-caja" id="mapa-ranking"></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ── Ranking completo ────────────────────────────────────────────────── -->
+  <section class="panel" id="p-ranking" role="tabpanel" aria-labelledby="t-ranking" hidden>
+    <div class="tarjeta">
+      <h2 class="tarjeta__titulo">Tabla municipal</h2>
+      <p class="tarjeta__nota">Clic en un encabezado para ordenar. Δ = diferencia frente al total departamental. CV = coeficiente de variación; por encima de 15 % la cifra no admite lectura fina.</p>
+      <div class="tabla-caja" id="tabla-ranking"></div>
+      <p class="fuente" id="ranking-fuente"></p>
+    </div>
+  </section>
+
+  <!-- ── Comparar ────────────────────────────────────────────────────────── -->
+  <section class="panel" id="p-comparar" role="tabpanel" aria-labelledby="t-comparar" hidden>
+    <div class="tarjeta">
+      <h2 class="tarjeta__titulo">Comparar territorios</h2>
+      <p class="tarjeta__nota">Agregá municipios, subregiones o el departamento: vas a ver el mismo indicador en todos, con las dos ondas de la encuesta cuando el indicador existe en ambas.</p>
+      <div class="campo" style="max-width:420px;margin-bottom:1rem">
+        <label class="campo__rotulo" for="c-agregar">Agregar territorio</label>
+        <select class="campo__control" id="c-agregar"></select>
+      </div>
+      <div class="pastillas" id="comparar-pastillas"></div>
+      <div id="comparar-lienzo"></div>
+      <p class="fuente" id="comparar-fuente"></p>
+    </div>
+  </section>
+
+  <!-- ── Subregiones ─────────────────────────────────────────────────────── -->
+  <section class="panel" id="p-subregiones" role="tabpanel" aria-labelledby="t-subregiones" hidden>
+    <div class="tarjeta">
+      <h2 class="tarjeta__titulo">Las nueve subregiones</h2>
+      <p class="tarjeta__nota">Cifra publicada por la encuesta para cada subregión, no un promedio de sus municipios: promediarlos sin ponderar por población daría un número que no existe.</p>
+      <div id="sub-lienzo"></div>
+      <div class="tabla-caja" id="sub-tabla" style="margin-top:1rem"></div>
+      <p class="fuente" id="sub-fuente"></p>
+    </div>
+  </section>
+
+  <!-- ── Dispersión ──────────────────────────────────────────────────────── -->
+  <section class="panel" id="p-dispersion" role="tabpanel" aria-labelledby="t-dispersion" hidden>
+    <div class="tarjeta">
+      <h2 class="tarjeta__titulo">Dos indicadores a la vez</h2>
+      <p class="tarjeta__nota">Cada punto es un municipio, coloreado por subregión. Que dos indicadores se muevan juntos no dice cuál causa al otro.</p>
+      <div class="campo" style="max-width:520px;margin-bottom:1rem">
+        <label class="campo__rotulo" for="c-eje-y">Indicador del eje vertical</label>
+        <select class="campo__control" id="c-eje-y"></select>
+      </div>
+      <div id="disp-lienzo"></div>
+      <p class="fuente" id="disp-fuente"></p>
+    </div>
+  </section>
+
+  <!-- ── Contexto: población, PIB per cápita, ICM ────────────────────────── -->
+  <section class="panel" id="p-contexto" role="tabpanel" aria-labelledby="t-contexto" hidden>
+    <div class="tarjeta">
+      <h2 class="tarjeta__titulo">Población, PIB per cápita e Índice de Ciudades Modernas</h2>
+      <p class="tarjeta__nota">Series municipales independientes de la encuesta. El valor agregado del DANE va a precios corrientes: entre dos años distintos, parte de la diferencia es inflación.</p>
+      <div class="campo" style="max-width:340px;margin-bottom:1rem">
+        <label class="campo__rotulo" for="c-serie">Serie</label>
+        <select class="campo__control" id="c-serie">
+          <option value="pc">PIB per cápita (COP corrientes)</option>
+          <option value="pob">Población</option>
+          <option value="icm">ICM · índice general</option>
+          <option value="pcc">ICM · productividad y competitividad</option>
+          <option value="gpi">ICM · gobernanza y participación</option>
+          <option value="eis">ICM · equidad e inclusión social</option>
+        </select>
+      </div>
+      <div id="ctx-lienzo"></div>
+      <div class="tabla-caja" id="ctx-tabla" style="margin-top:1rem"></div>
+      <p class="fuente" id="ctx-fuente"></p>
+    </div>
+  </section>
+
+  <!-- ── Ficha municipal ─────────────────────────────────────────────────── -->
+  <section class="panel" id="p-ficha" role="tabpanel" aria-labelledby="t-ficha" hidden>
+    <div class="tarjeta">
+      <div class="campo" style="max-width:380px;margin-bottom:1rem">
+        <label class="campo__rotulo" for="c-ficha">Municipio</label>
+        <select class="campo__control" id="c-ficha"></select>
+      </div>
+      <div id="ficha-lienzo"></div>
+    </div>
+  </section>
+
+  <!-- ── Explorador ──────────────────────────────────────────────────────── -->
+  <section class="panel" id="p-explorar" role="tabpanel" aria-labelledby="t-explorar" hidden>
+    <div class="tarjeta">
+      <h2 class="tarjeta__titulo" id="explorar-titulo">Todos los indicadores</h2>
+      <p class="tarjeta__nota">Buscá por nombre y elegí uno para llevarlo al mapa y al ranking.</p>
+      <div class="campo" style="max-width:520px;margin-bottom:1rem">
+        <label class="campo__rotulo" for="c-buscar">Buscar indicador</label>
+        <input class="campo__control" id="c-buscar" type="search" autocomplete="off"
+               placeholder="informalidad, agua potable, analfabetismo…">
+      </div>
+      <div class="tabla-caja" id="explorar-tabla"></div>
+    </div>
+  </section>
+
+  <!-- ── Metodología ─────────────────────────────────────────────────────── -->
+  <section class="panel" id="p-metodo" role="tabpanel" aria-labelledby="t-metodo" hidden>
+    <div class="tarjeta prosa">
+      <h2 class="tarjeta__titulo">De dónde sale cada cifra</h2>
+      <div id="metodo-fuentes"></div>
+
+      <h3>Qué se puede comparar y qué no</h3>
+      <ul>
+        <li><b>Entre municipios, dentro del mismo año:</b> sí. Es la comparación para la que la encuesta fue diseñada.</li>
+        <li><b>Entre 2021 y 2023:</b> solo en los <b id="metodo-comunes">—</b> indicadores que aparecen en las dos ondas. El selector de año avisa cuando un indicador existe en un solo año.</li>
+        <li><b>Entre municipio y subregión:</b> sí, pero la cifra subregional es la que publica la encuesta, no el promedio de sus municipios.</li>
+        <li><b>PIB per cápita entre años:</b> con cuidado. El valor agregado del DANE va a precios corrientes, así que el crecimiento incluye inflación.</li>
+      </ul>
+
+      <h3>El coeficiente de variación</h3>
+      <p>
+        La ECV es una encuesta por muestreo, no un censo. El coeficiente de
+        variación mide cuánto se movería la cifra si se repitiera el ejercicio
+        con otra muestra. Se muestra al lado de cada dato y por encima del 15 %
+        aparece en rojo: ahí el número sirve para ver un orden de magnitud, no
+        para afirmar que un municipio superó a otro por dos décimas.
+      </p>
+
+      <h3>Cómo se armó el mapa</h3>
+      <p>
+        La geometría es el Marco Geoestadístico Nacional del DANE, simplificada
+        para que pese 68 KB. La asignación de cada municipio a su subregión sale
+        del Anuario Estadístico de la Gobernación de Antioquia: 10 municipios en
+        el Valle de Aburrá, 6 en Bajo Cauca, 6 en Magdalena Medio, 10 en
+        Nordeste, 17 en Norte, 19 en Occidente, 23 en Oriente, 23 en Suroeste y
+        11 en Urabá. La encuesta llama «Área Metropolitana» al Valle de Aburrá;
+        son los mismos diez municipios.
+      </p>
+
+      <h3>Qué quedó fuera</h3>
+      <p>
+        La encuesta publica también cortes por zona (25), provincia (6) y comunas
+        de Medellín. No se cargaron acá para no mezclar niveles territoriales que
+        no son comparables entre sí. Están en la fuente original.
+      </p>
+    </div>
+  </section>
+
+</main>
+
+<div class="globo" id="globo" hidden role="status"></div>
+
+<footer class="pie">
+  <div class="envoltura">
+    <p>
+      Elaboración <b>Cifra País Analítica S.A.S.</b> — firma privada
+      independiente. No es una entidad pública ni está adscrita a ninguna.
+      · <a href="https://cifrapais.com/">cifrapais.com</a>
+    </p>
+  </div>
+</footer>
+
+<noscript>
+  <div class="envoltura">
+    <p class="aviso">Este tablero necesita JavaScript para dibujar el mapa y las
+    tablas. Los datos están en archivos JSON dentro de esta misma carpeta y se
+    pueden descargar directamente.</p>
+  </div>
+</noscript>
+
+<script src="app.js?v=1.0.0" defer></script>
+</body>
+</html>
