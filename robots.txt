@@ -1,0 +1,5 @@
+# cifrapais.com
+User-agent: *
+Allow: /
+
+Sitemap: https://cifrapais.com/sitemap.xml
