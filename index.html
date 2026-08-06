@@ -272,7 +272,7 @@
 
       <header class="seccion__cabeza">
         <p class="antetitulo">02 — Servicios</p>
-        <h2 class="seccion__titulo" id="servicios-titulo">Cuatro líneas, un solo método</h2>
+        <h2 class="seccion__titulo" id="servicios-titulo">Tres líneas, un solo método</h2>
         <p class="seccion__entradilla">
           Todo trabajo se entrega con los datos y el código que lo producen. Si la
           conclusión no se entiende sin nosotros al lado explicándola, no está terminado.
@@ -324,21 +324,6 @@
             <li>URL propia y permanente por documento</li>
           </ul>
           <p class="fuente tarjeta__pie">Entregable: PDF + código + datos</p>
-        </article>
-
-        <article class="tarjeta">
-          <p class="tarjeta__linea" translate="no">Cifra País Escuela</p>
-          <h3 class="tarjeta__titulo">Formación y talleres</h3>
-          <p class="tarjeta__texto">
-            Capacitación para equipos de planeación que ya tienen los datos y
-            necesitan leerlos: del microdato del DANE al indicador defendible en comité.
-          </p>
-          <ul class="lista-marcada">
-            <li>Manejo de microdatos GEIH, ENUT y Censo</li>
-            <li>Construcción y control de calidad de indicadores</li>
-            <li>Comunicación de resultados con margen de error</li>
-          </ul>
-          <p class="fuente tarjeta__pie">Entregable: taller + material reutilizable</p>
         </article>
 
       </div>
@@ -409,8 +394,11 @@
                lector de pantalla no lo lea como parte del encabezado. -->
           <p class="aviso-rotar" role="status">Girá el dispositivo: el tablero se lee mucho mejor en horizontal.</p>
 
-          <!-- Contenedor de incrustación. El iframe se carga solo cuando la
-               categoría se activa: evita descargar cuatro tableros de golpe. -->
+          <!-- Contenedor de incrustación. El iframe no se carga solo: espera a
+               que el usuario pulse «Ver el tablero». Cada tablero pesa entre
+               700 KB y 1,4 MB y al incrustarlo la pestaña se queda sin
+               responder unos segundos; los KPI de arriba dan la respuesta
+               rápida sin pagar ese costo. -->
           <!-- role y aria-labelledby los pone cifrapais.js: solo hay tabpanel
                cuando el tablero declara más de una vista. -->
           <div class="lienzo" id="tablero-lienzo" tabindex="0">
@@ -433,8 +421,8 @@
               <div class="lienzo__mensaje">
                 <p class="antetitulo antetitulo--claro">Cargando tablero…</p>
                 <p class="lienzo__nota">Si no aparece en unos segundos, abrilo en pestaña nueva.</p>
-                <button class="boton boton--fantasma-claro boton--menudo"
-                        id="btn-cargar-tablero" type="button" hidden>Abrir el tablero</button>
+                <button class="boton boton--acento"
+                        id="btn-cargar-tablero" type="button" hidden>Ver el tablero</button>
               </div>
             </div>
             <!-- sandbox: el tablero incrustado corre con los permisos mínimos
@@ -484,62 +472,54 @@
         <p class="antetitulo antetitulo--claro">04 — Insights territoriales</p>
         <h2 class="seccion__titulo seccion__titulo--claro" id="territorios-titulo">Radiografía regional</h2>
         <p class="seccion__entradilla seccion__entradilla--clara">
-          Los 33 dominios departamentales de la GEIH, la misma ficha para todos:
-          cuánta gente está en edad
-          de trabajar, cuánta trabaja, cómo se reparte esa carga entre hombres y
-          mujeres, y de qué vive el departamento. Cada tarjeta trae su muestra y su
-          fecha de corte; donde la muestra es chica, lo dice antes de que lo
-          descubra el lector.
+          Los 33 dominios departamentales de la GEIH, la misma ficha para todos.
+          Buscá un departamento, ordenalos por el indicador que te interese y
+          compará. Cada ficha trae su muestra y su fecha de corte; donde la
+          muestra es chica, lo dice antes de que lo descubra el lector.
         </p>
       </header>
 
-      <nav class="chips-caja" aria-label="Ir a un departamento">
-      <ul class="chips" id="territorios-chips">
-        <li><a class="chip" href="#t-amazonas" data-terr="amazonas">Amazonas</a></li>
-        <li><a class="chip" href="#t-antioquia" data-terr="antioquia">Antioquia</a></li>
-        <li><a class="chip" href="#t-arauca" data-terr="arauca">Arauca</a></li>
-        <li><a class="chip" href="#t-atlantico" data-terr="atlantico">Atlántico</a></li>
-        <li><a class="chip" href="#t-bogota-d-c" data-terr="bogota-d-c">Bogotá D.C.</a></li>
-        <li><a class="chip" href="#t-bolivar" data-terr="bolivar">Bolívar</a></li>
-        <li><a class="chip" href="#t-boyaca" data-terr="boyaca">Boyacá</a></li>
-        <li><a class="chip" href="#t-caldas" data-terr="caldas">Caldas</a></li>
-        <li><a class="chip" href="#t-caqueta" data-terr="caqueta">Caquetá</a></li>
-        <li><a class="chip" href="#t-casanare" data-terr="casanare">Casanare</a></li>
-        <li><a class="chip" href="#t-cauca" data-terr="cauca">Cauca</a></li>
-        <li><a class="chip" href="#t-cesar" data-terr="cesar">Cesar</a></li>
-        <li><a class="chip" href="#t-choco" data-terr="choco">Chocó</a></li>
-        <li><a class="chip" href="#t-cordoba" data-terr="cordoba">Córdoba</a></li>
-        <li><a class="chip" href="#t-cundinamarca" data-terr="cundinamarca">Cundinamarca</a></li>
-        <li><a class="chip" href="#t-guainia" data-terr="guainia">Guainía</a></li>
-        <li><a class="chip" href="#t-guaviare" data-terr="guaviare">Guaviare</a></li>
-        <li><a class="chip" href="#t-huila" data-terr="huila">Huila</a></li>
-        <li><a class="chip" href="#t-la-guajira" data-terr="la-guajira">La Guajira</a></li>
-        <li><a class="chip" href="#t-magdalena" data-terr="magdalena">Magdalena</a></li>
-        <li><a class="chip" href="#t-meta" data-terr="meta">Meta</a></li>
-        <li><a class="chip" href="#t-narino" data-terr="narino">Nariño</a></li>
-        <li><a class="chip" href="#t-norte-de-santander" data-terr="norte-de-santander">Norte de Santander</a></li>
-        <li><a class="chip" href="#t-putumayo" data-terr="putumayo">Putumayo</a></li>
-        <li><a class="chip" href="#t-quindio" data-terr="quindio">Quindío</a></li>
-        <li><a class="chip" href="#t-risaralda" data-terr="risaralda">Risaralda</a></li>
-        <li><a class="chip" href="#t-san-andres" data-terr="san-andres">San Andrés</a></li>
-        <li><a class="chip" href="#t-santander" data-terr="santander">Santander</a></li>
-        <li><a class="chip" href="#t-sucre" data-terr="sucre">Sucre</a></li>
-        <li><a class="chip" href="#t-tolima" data-terr="tolima">Tolima</a></li>
-        <li><a class="chip" href="#t-valle-del-cauca" data-terr="valle-del-cauca">Valle del Cauca</a></li>
-        <li><a class="chip" href="#t-vaupes" data-terr="vaupes">Vaupés</a></li>
-        <li><a class="chip" href="#t-vichada" data-terr="vichada">Vichada</a></li>
-        </ul>
-      </nav>
+      <!-- Barra de control de la radiografía.
+           El índice de 33 chips se reemplazó por un buscador y un orden: con 33
+           departamentos, leer una lista alfabética completa para encontrar uno
+           cuesta más que escribir tres letras. El buscador filtra la rejilla en
+           vivo; el orden la reordena por el indicador que se elija.
+           Sin JavaScript la barra se oculta y quedan las 33 fichas en su orden
+           alfabético, que es exactamente lo que había antes. -->
+      <div class="radiografia__control" id="terr-control" hidden>
+        <div class="busca">
+          <label class="busca__etiqueta" for="terr-busca">Buscar departamento</label>
+          <input class="busca__campo" id="terr-busca" type="search" autocomplete="off"
+                 placeholder="Antioquia, Chocó, Vaupés…"
+                 aria-describedby="terr-cuenta">
+        </div>
+
+        <div class="ordena">
+          <label class="ordena__etiqueta" for="terr-orden">Ordenar por</label>
+          <select class="ordena__campo" id="terr-orden">
+            <option value="nombre">Nombre (A–Z)</option>
+            <option value="desempleo">Desempleo (mayor primero)</option>
+            <option value="informalidad">Informalidad (mayor primero)</option>
+            <option value="ocupacion">Ocupación (mayor primero)</option>
+            <option value="brecha">Brecha de género (mayor primero)</option>
+            <option value="ingreso">Ingreso laboral (mayor primero)</option>
+          </select>
+        </div>
+
+        <p class="radiografia__cuenta" id="terr-cuenta" role="status" aria-live="polite">33 departamentos</p>
+      </div>
+
 
     </div>
 
     <div class="contenedor">
-      <!-- La pista es enfocable y navegable con las flechas del teclado: un
-           carrusel que solo responde al mouse deja fuera a media oficina. -->
-      <div class="carrusel__pista" id="territorios-pista" tabindex="0"
-           role="group" aria-label="Tarjetas departamentales, deslizables">
+      <!-- Rejilla, no carrusel. Las 33 fichas están todas en el HTML y se ven
+           de una: comparar dos departamentos ya no exige recordar el que quedó
+           atrás. El buscador y el orden operan sobre esta misma lista. -->
+      <div class="radiografia__rejilla" id="territorios-pista"
+           role="list" aria-label="Fichas departamentales">
 
-<article class="territorio" id="t-amazonas" data-busca="amazonas" aria-labelledby="t-amazonas-titulo">
+<article class="territorio" role="listitem" id="t-amazonas" data-desempleo="4.1" data-informalidad="62.1" data-ocupacion="54.9" data-brecha="33.3" data-ingreso="1821245" data-busca="amazonas" aria-labelledby="t-amazonas-titulo">
         <header class="territorio__cabeza">
           <h3 class="territorio__nombre" id="t-amazonas-titulo">Amazonas</h3>
           <p class="territorio__masa">
@@ -645,7 +625,7 @@
         <p class="fuente fuente--clara territorio__pie">Fuente: DANE · GEIH 2026 T1 · marco 2018 · muestra 1.081 personas · elaboración Cifra País · actualizado 13-jul-2026</p>
       </article>
 
-      <article class="territorio" id="t-antioquia" data-busca="antioquia" aria-labelledby="t-antioquia-titulo">
+      <article class="territorio" role="listitem" id="t-antioquia" data-desempleo="10.5" data-informalidad="44.3" data-ocupacion="56.8" data-brecha="26.2" data-ingreso="2473030" data-busca="antioquia" aria-labelledby="t-antioquia-titulo">
         <header class="territorio__cabeza">
           <h3 class="territorio__nombre" id="t-antioquia-titulo">Antioquia</h3>
           <p class="territorio__masa">
@@ -750,7 +730,7 @@
         <p class="fuente fuente--clara territorio__pie">Fuente: DANE · GEIH 2026 T1 · marco 2018 · muestra 11.570 personas · elaboración Cifra País · actualizado 13-jul-2026</p>
       </article>
 
-      <article class="territorio" id="t-arauca" data-busca="arauca" aria-labelledby="t-arauca-titulo">
+      <article class="territorio" role="listitem" id="t-arauca" data-desempleo="16.4" data-informalidad="70.1" data-ocupacion="54.0" data-brecha="18.9" data-ingreso="1560374" data-busca="arauca" aria-labelledby="t-arauca-titulo">
         <header class="territorio__cabeza">
           <h3 class="territorio__nombre" id="t-arauca-titulo">Arauca</h3>
           <p class="territorio__masa">
@@ -856,7 +836,7 @@
         <p class="fuente fuente--clara territorio__pie">Fuente: DANE · GEIH 2026 T1 · marco 2018 · muestra 1.145 personas · elaboración Cifra País · actualizado 13-jul-2026</p>
       </article>
 
-      <article class="territorio" id="t-atlantico" data-busca="atlantico" aria-labelledby="t-atlantico-titulo">
+      <article class="territorio" role="listitem" id="t-atlantico" data-desempleo="8.4" data-informalidad="58.1" data-ocupacion="58.0" data-brecha="25.8" data-ingreso="1858347" data-busca="atlantico" aria-labelledby="t-atlantico-titulo">
         <header class="territorio__cabeza">
           <h3 class="territorio__nombre" id="t-atlantico-titulo">Atlántico</h3>
           <p class="territorio__masa">
@@ -961,7 +941,7 @@
         <p class="fuente fuente--clara territorio__pie">Fuente: DANE · GEIH 2026 T1 · marco 2018 · muestra 8.972 personas · elaboración Cifra País · actualizado 13-jul-2026</p>
       </article>
 
-      <article class="territorio" id="t-bogota-d-c" data-busca="bogota d.c." aria-labelledby="t-bogota-d-c-titulo">
+      <article class="territorio" role="listitem" id="t-bogota-d-c" data-desempleo="8.8" data-informalidad="30.9" data-ocupacion="63.9" data-brecha="13.6" data-ingreso="3416630" data-busca="bogota d.c." aria-labelledby="t-bogota-d-c-titulo">
         <header class="territorio__cabeza">
           <h3 class="territorio__nombre" id="t-bogota-d-c-titulo">Bogotá D.C.</h3>
           <p class="territorio__masa">
@@ -1066,7 +1046,7 @@
         <p class="fuente fuente--clara territorio__pie">Fuente: DANE · GEIH 2026 T1 · marco 2018 · muestra 6.686 personas · elaboración Cifra País · actualizado 13-jul-2026</p>
       </article>
 
-      <article class="territorio" id="t-bolivar" data-busca="bolivar" aria-labelledby="t-bolivar-titulo">
+      <article class="territorio" role="listitem" id="t-bolivar" data-desempleo="9.7" data-informalidad="66.2" data-ocupacion="54.1" data-brecha="33.2" data-ingreso="1654039" data-busca="bolivar" aria-labelledby="t-bolivar-titulo">
         <header class="territorio__cabeza">
           <h3 class="territorio__nombre" id="t-bolivar-titulo">Bolívar</h3>
           <p class="territorio__masa">
@@ -1171,7 +1151,7 @@
         <p class="fuente fuente--clara territorio__pie">Fuente: DANE · GEIH 2026 T1 · marco 2018 · muestra 8.707 personas · elaboración Cifra País · actualizado 13-jul-2026</p>
       </article>
 
-      <article class="territorio" id="t-boyaca" data-busca="boyaca" aria-labelledby="t-boyaca-titulo">
+      <article class="territorio" role="listitem" id="t-boyaca" data-desempleo="12.4" data-informalidad="60.5" data-ocupacion="49.7" data-brecha="25.6" data-ingreso="1979611" data-busca="boyaca" aria-labelledby="t-boyaca-titulo">
         <header class="territorio__cabeza">
           <h3 class="territorio__nombre" id="t-boyaca-titulo">Boyacá</h3>
           <p class="territorio__masa">
@@ -1276,7 +1256,7 @@
         <p class="fuente fuente--clara territorio__pie">Fuente: DANE · GEIH 2026 T1 · marco 2018 · muestra 6.472 personas · elaboración Cifra País · actualizado 13-jul-2026</p>
       </article>
 
-      <article class="territorio" id="t-caldas" data-busca="caldas" aria-labelledby="t-caldas-titulo">
+      <article class="territorio" role="listitem" id="t-caldas" data-desempleo="8.3" data-informalidad="51.1" data-ocupacion="55.4" data-brecha="29.3" data-ingreso="2192773" data-busca="caldas" aria-labelledby="t-caldas-titulo">
         <header class="territorio__cabeza">
           <h3 class="territorio__nombre" id="t-caldas-titulo">Caldas</h3>
           <p class="territorio__masa">
@@ -1381,7 +1361,7 @@
         <p class="fuente fuente--clara territorio__pie">Fuente: DANE · GEIH 2026 T1 · marco 2018 · muestra 9.645 personas · elaboración Cifra País · actualizado 13-jul-2026</p>
       </article>
 
-      <article class="territorio" id="t-caqueta" data-busca="caqueta" aria-labelledby="t-caqueta-titulo">
+      <article class="territorio" role="listitem" id="t-caqueta" data-desempleo="12.6" data-informalidad="73.8" data-ocupacion="48.8" data-brecha="37.9" data-ingreso="1911364" data-busca="caqueta" aria-labelledby="t-caqueta-titulo">
         <header class="territorio__cabeza">
           <h3 class="territorio__nombre" id="t-caqueta-titulo">Caquetá</h3>
           <p class="territorio__masa">
@@ -1486,7 +1466,7 @@
         <p class="fuente fuente--clara territorio__pie">Fuente: DANE · GEIH 2026 T1 · marco 2018 · muestra 7.139 personas · elaboración Cifra País · actualizado 13-jul-2026</p>
       </article>
 
-      <article class="territorio" id="t-casanare" data-busca="casanare" aria-labelledby="t-casanare-titulo">
+      <article class="territorio" role="listitem" id="t-casanare" data-desempleo="10.6" data-informalidad="48.2" data-ocupacion="67.0" data-brecha="13.6" data-ingreso="2427346" data-busca="casanare" aria-labelledby="t-casanare-titulo">
         <header class="territorio__cabeza">
           <h3 class="territorio__nombre" id="t-casanare-titulo">Casanare</h3>
           <p class="territorio__masa">
@@ -1592,7 +1572,7 @@
         <p class="fuente fuente--clara territorio__pie">Fuente: DANE · GEIH 2026 T1 · marco 2018 · muestra 1.211 personas · elaboración Cifra País · actualizado 13-jul-2026</p>
       </article>
 
-      <article class="territorio" id="t-cauca" data-busca="cauca" aria-labelledby="t-cauca-titulo">
+      <article class="territorio" role="listitem" id="t-cauca" data-desempleo="7.3" data-informalidad="78.7" data-ocupacion="61.2" data-brecha="28.0" data-ingreso="1299405" data-busca="cauca" aria-labelledby="t-cauca-titulo">
         <header class="territorio__cabeza">
           <h3 class="territorio__nombre" id="t-cauca-titulo">Cauca</h3>
           <p class="territorio__masa">
@@ -1697,7 +1677,7 @@
         <p class="fuente fuente--clara territorio__pie">Fuente: DANE · GEIH 2026 T1 · marco 2018 · muestra 6.823 personas · elaboración Cifra País · actualizado 13-jul-2026</p>
       </article>
 
-      <article class="territorio" id="t-cesar" data-busca="cesar" aria-labelledby="t-cesar-titulo">
+      <article class="territorio" role="listitem" id="t-cesar" data-desempleo="11.1" data-informalidad="70.8" data-ocupacion="52.9" data-brecha="29.4" data-ingreso="1692467" data-busca="cesar" aria-labelledby="t-cesar-titulo">
         <header class="territorio__cabeza">
           <h3 class="territorio__nombre" id="t-cesar-titulo">Cesar</h3>
           <p class="territorio__masa">
@@ -1802,7 +1782,7 @@
         <p class="fuente fuente--clara territorio__pie">Fuente: DANE · GEIH 2026 T1 · marco 2018 · muestra 7.624 personas · elaboración Cifra País · actualizado 13-jul-2026</p>
       </article>
 
-      <article class="territorio" id="t-choco" data-busca="choco" aria-labelledby="t-choco-titulo">
+      <article class="territorio" role="listitem" id="t-choco" data-desempleo="13.4" data-informalidad="82.1" data-ocupacion="34.3" data-brecha="29.8" data-ingreso="1205707" data-busca="choco" aria-labelledby="t-choco-titulo">
         <header class="territorio__cabeza">
           <h3 class="territorio__nombre" id="t-choco-titulo">Chocó</h3>
           <p class="territorio__masa">
@@ -1907,7 +1887,7 @@
         <p class="fuente fuente--clara territorio__pie">Fuente: DANE · GEIH 2026 T1 · marco 2018 · muestra 7.680 personas · elaboración Cifra País · actualizado 13-jul-2026</p>
       </article>
 
-      <article class="territorio" id="t-cordoba" data-busca="cordoba" aria-labelledby="t-cordoba-titulo">
+      <article class="territorio" role="listitem" id="t-cordoba" data-desempleo="11.2" data-informalidad="79.2" data-ocupacion="56.8" data-brecha="31.1" data-ingreso="1210618" data-busca="cordoba" aria-labelledby="t-cordoba-titulo">
         <header class="territorio__cabeza">
           <h3 class="territorio__nombre" id="t-cordoba-titulo">Córdoba</h3>
           <p class="territorio__masa">
@@ -2012,7 +1992,7 @@
         <p class="fuente fuente--clara territorio__pie">Fuente: DANE · GEIH 2026 T1 · marco 2018 · muestra 6.756 personas · elaboración Cifra País · actualizado 13-jul-2026</p>
       </article>
 
-      <article class="territorio" id="t-cundinamarca" data-busca="cundinamarca" aria-labelledby="t-cundinamarca-titulo">
+      <article class="territorio" role="listitem" id="t-cundinamarca" data-desempleo="8.9" data-informalidad="41.7" data-ocupacion="66.0" data-brecha="17.8" data-ingreso="2308932" data-busca="cundinamarca" aria-labelledby="t-cundinamarca-titulo">
         <header class="territorio__cabeza">
           <h3 class="territorio__nombre" id="t-cundinamarca-titulo">Cundinamarca</h3>
           <p class="territorio__masa">
@@ -2117,7 +2097,7 @@
         <p class="fuente fuente--clara territorio__pie">Fuente: DANE · GEIH 2026 T1 · marco 2018 · muestra 4.038 personas · elaboración Cifra País · actualizado 13-jul-2026</p>
       </article>
 
-      <article class="territorio" id="t-guainia" data-busca="guainia" aria-labelledby="t-guainia-titulo">
+      <article class="territorio" role="listitem" id="t-guainia" data-desempleo="10.5" data-informalidad="67.0" data-ocupacion="52.3" data-brecha="35.5" data-ingreso="2282446" data-busca="guainia" aria-labelledby="t-guainia-titulo">
         <header class="territorio__cabeza">
           <h3 class="territorio__nombre" id="t-guainia-titulo">Guainía</h3>
           <p class="territorio__masa">
@@ -2223,7 +2203,7 @@
         <p class="fuente fuente--clara territorio__pie">Fuente: DANE · GEIH 2026 T1 · marco 2018 · muestra 1.255 personas · elaboración Cifra País · actualizado 13-jul-2026</p>
       </article>
 
-      <article class="territorio" id="t-guaviare" data-busca="guaviare" aria-labelledby="t-guaviare-titulo">
+      <article class="territorio" role="listitem" id="t-guaviare" data-desempleo="7.3" data-informalidad="65.4" data-ocupacion="76.5" data-brecha="12.1" data-ingreso="2048635" data-busca="guaviare" aria-labelledby="t-guaviare-titulo">
         <header class="territorio__cabeza">
           <h3 class="territorio__nombre" id="t-guaviare-titulo">Guaviare</h3>
           <p class="territorio__masa">
@@ -2329,7 +2309,7 @@
         <p class="fuente fuente--clara territorio__pie">Fuente: DANE · GEIH 2026 T1 · marco 2018 · muestra 922 personas · elaboración Cifra País · actualizado 13-jul-2026</p>
       </article>
 
-      <article class="territorio" id="t-huila" data-busca="huila" aria-labelledby="t-huila-titulo">
+      <article class="territorio" role="listitem" id="t-huila" data-desempleo="5.6" data-informalidad="72.4" data-ocupacion="56.6" data-brecha="40.1" data-ingreso="1724240" data-busca="huila" aria-labelledby="t-huila-titulo">
         <header class="territorio__cabeza">
           <h3 class="territorio__nombre" id="t-huila-titulo">Huila</h3>
           <p class="territorio__masa">
@@ -2434,7 +2414,7 @@
         <p class="fuente fuente--clara territorio__pie">Fuente: DANE · GEIH 2026 T1 · marco 2018 · muestra 7.207 personas · elaboración Cifra País · actualizado 13-jul-2026</p>
       </article>
 
-      <article class="territorio" id="t-la-guajira" data-busca="la guajira" aria-labelledby="t-la-guajira-titulo">
+      <article class="territorio" role="listitem" id="t-la-guajira" data-desempleo="14.2" data-informalidad="83.9" data-ocupacion="52.7" data-brecha="22.2" data-ingreso="1156808" data-busca="la guajira" aria-labelledby="t-la-guajira-titulo">
         <header class="territorio__cabeza">
           <h3 class="territorio__nombre" id="t-la-guajira-titulo">La Guajira</h3>
           <p class="territorio__masa">
@@ -2539,7 +2519,7 @@
         <p class="fuente fuente--clara territorio__pie">Fuente: DANE · GEIH 2026 T1 · marco 2018 · muestra 7.793 personas · elaboración Cifra País · actualizado 13-jul-2026</p>
       </article>
 
-      <article class="territorio" id="t-magdalena" data-busca="magdalena" aria-labelledby="t-magdalena-titulo">
+      <article class="territorio" role="listitem" id="t-magdalena" data-desempleo="10.8" data-informalidad="71.7" data-ocupacion="54.2" data-brecha="29.8" data-ingreso="1347662" data-busca="magdalena" aria-labelledby="t-magdalena-titulo">
         <header class="territorio__cabeza">
           <h3 class="territorio__nombre" id="t-magdalena-titulo">Magdalena</h3>
           <p class="territorio__masa">
@@ -2644,7 +2624,7 @@
         <p class="fuente fuente--clara territorio__pie">Fuente: DANE · GEIH 2026 T1 · marco 2018 · muestra 8.858 personas · elaboración Cifra País · actualizado 13-jul-2026</p>
       </article>
 
-      <article class="territorio" id="t-meta" data-busca="meta" aria-labelledby="t-meta-titulo">
+      <article class="territorio" role="listitem" id="t-meta" data-desempleo="8.0" data-informalidad="60.6" data-ocupacion="58.6" data-brecha="21.9" data-ingreso="2057231" data-busca="meta" aria-labelledby="t-meta-titulo">
         <header class="territorio__cabeza">
           <h3 class="territorio__nombre" id="t-meta-titulo">Meta</h3>
           <p class="territorio__masa">
@@ -2749,7 +2729,7 @@
         <p class="fuente fuente--clara territorio__pie">Fuente: DANE · GEIH 2026 T1 · marco 2018 · muestra 8.073 personas · elaboración Cifra País · actualizado 13-jul-2026</p>
       </article>
 
-      <article class="territorio" id="t-narino" data-busca="narino" aria-labelledby="t-narino-titulo">
+      <article class="territorio" role="listitem" id="t-narino" data-desempleo="6.4" data-informalidad="82.6" data-ocupacion="67.7" data-brecha="22.5" data-ingreso="1185083" data-busca="narino" aria-labelledby="t-narino-titulo">
         <header class="territorio__cabeza">
           <h3 class="territorio__nombre" id="t-narino-titulo">Nariño</h3>
           <p class="territorio__masa">
@@ -2854,7 +2834,7 @@
         <p class="fuente fuente--clara territorio__pie">Fuente: DANE · GEIH 2026 T1 · marco 2018 · muestra 8.429 personas · elaboración Cifra País · actualizado 13-jul-2026</p>
       </article>
 
-      <article class="territorio" id="t-norte-de-santander" data-busca="norte de santander" aria-labelledby="t-norte-de-santander-titulo">
+      <article class="territorio" role="listitem" id="t-norte-de-santander" data-desempleo="11.9" data-informalidad="69.7" data-ocupacion="53.8" data-brecha="29.5" data-ingreso="1810829" data-busca="norte de santander" aria-labelledby="t-norte-de-santander-titulo">
         <header class="territorio__cabeza">
           <h3 class="territorio__nombre" id="t-norte-de-santander-titulo">Norte de Santander</h3>
           <p class="territorio__masa">
@@ -2959,7 +2939,7 @@
         <p class="fuente fuente--clara territorio__pie">Fuente: DANE · GEIH 2026 T1 · marco 2018 · muestra 7.568 personas · elaboración Cifra País · actualizado 13-jul-2026</p>
       </article>
 
-      <article class="territorio" id="t-putumayo" data-busca="putumayo" aria-labelledby="t-putumayo-titulo">
+      <article class="territorio" role="listitem" id="t-putumayo" data-desempleo="20.7" data-informalidad="60.0" data-ocupacion="44.0" data-brecha="20.5" data-ingreso="2228285" data-busca="putumayo" aria-labelledby="t-putumayo-titulo">
         <header class="territorio__cabeza">
           <h3 class="territorio__nombre" id="t-putumayo-titulo">Putumayo</h3>
           <p class="territorio__masa">
@@ -3065,7 +3045,7 @@
         <p class="fuente fuente--clara territorio__pie">Fuente: DANE · GEIH 2026 T1 · marco 2018 · muestra 1.103 personas · elaboración Cifra País · actualizado 13-jul-2026</p>
       </article>
 
-      <article class="territorio" id="t-quindio" data-busca="quindio" aria-labelledby="t-quindio-titulo">
+      <article class="territorio" role="listitem" id="t-quindio" data-desempleo="11.3" data-informalidad="51.9" data-ocupacion="54.2" data-brecha="24.7" data-ingreso="2150453" data-busca="quindio" aria-labelledby="t-quindio-titulo">
         <header class="territorio__cabeza">
           <h3 class="territorio__nombre" id="t-quindio-titulo">Quindío</h3>
           <p class="territorio__masa">
@@ -3170,7 +3150,7 @@
         <p class="fuente fuente--clara territorio__pie">Fuente: DANE · GEIH 2026 T1 · marco 2018 · muestra 7.364 personas · elaboración Cifra País · actualizado 13-jul-2026</p>
       </article>
 
-      <article class="territorio" id="t-risaralda" data-busca="risaralda" aria-labelledby="t-risaralda-titulo">
+      <article class="territorio" role="listitem" id="t-risaralda" data-desempleo="8.0" data-informalidad="48.0" data-ocupacion="55.9" data-brecha="27.0" data-ingreso="2101497" data-busca="risaralda" aria-labelledby="t-risaralda-titulo">
         <header class="territorio__cabeza">
           <h3 class="territorio__nombre" id="t-risaralda-titulo">Risaralda</h3>
           <p class="territorio__masa">
@@ -3275,7 +3255,7 @@
         <p class="fuente fuente--clara territorio__pie">Fuente: DANE · GEIH 2026 T1 · marco 2018 · muestra 9.003 personas · elaboración Cifra País · actualizado 13-jul-2026</p>
       </article>
 
-      <article class="territorio" id="t-san-andres" data-busca="san andres" aria-labelledby="t-san-andres-titulo">
+      <article class="territorio" role="listitem" id="t-san-andres" data-desempleo="13.3" data-informalidad="23.3" data-ocupacion="62.1" data-brecha="11.6" data-ingreso="2572863" data-busca="san andres" aria-labelledby="t-san-andres-titulo">
         <header class="territorio__cabeza">
           <h3 class="territorio__nombre" id="t-san-andres-titulo">San Andrés</h3>
           <p class="territorio__masa">
@@ -3380,7 +3360,7 @@
         <p class="fuente fuente--clara territorio__pie">Fuente: DANE · GEIH 2026 T1 · marco 2018 · muestra 2.014 personas · elaboración Cifra País · actualizado 13-jul-2026</p>
       </article>
 
-      <article class="territorio" id="t-santander" data-busca="santander" aria-labelledby="t-santander-titulo">
+      <article class="territorio" role="listitem" id="t-santander" data-desempleo="9.5" data-informalidad="54.6" data-ocupacion="56.1" data-brecha="23.9" data-ingreso="2205630" data-busca="santander" aria-labelledby="t-santander-titulo">
         <header class="territorio__cabeza">
           <h3 class="territorio__nombre" id="t-santander-titulo">Santander</h3>
           <p class="territorio__masa">
@@ -3485,7 +3465,7 @@
         <p class="fuente fuente--clara territorio__pie">Fuente: DANE · GEIH 2026 T1 · marco 2018 · muestra 9.670 personas · elaboración Cifra País · actualizado 13-jul-2026</p>
       </article>
 
-      <article class="territorio" id="t-sucre" data-busca="sucre" aria-labelledby="t-sucre-titulo">
+      <article class="territorio" role="listitem" id="t-sucre" data-desempleo="10.8" data-informalidad="84.1" data-ocupacion="57.1" data-brecha="29.7" data-ingreso="1067966" data-busca="sucre" aria-labelledby="t-sucre-titulo">
         <header class="territorio__cabeza">
           <h3 class="territorio__nombre" id="t-sucre-titulo">Sucre</h3>
           <p class="territorio__masa">
@@ -3590,7 +3570,7 @@
         <p class="fuente fuente--clara territorio__pie">Fuente: DANE · GEIH 2026 T1 · marco 2018 · muestra 7.950 personas · elaboración Cifra País · actualizado 13-jul-2026</p>
       </article>
 
-      <article class="territorio" id="t-tolima" data-busca="tolima" aria-labelledby="t-tolima-titulo">
+      <article class="territorio" role="listitem" id="t-tolima" data-desempleo="11.0" data-informalidad="67.3" data-ocupacion="52.5" data-brecha="30.1" data-ingreso="1758249" data-busca="tolima" aria-labelledby="t-tolima-titulo">
         <header class="territorio__cabeza">
           <h3 class="territorio__nombre" id="t-tolima-titulo">Tolima</h3>
           <p class="territorio__masa">
@@ -3695,7 +3675,7 @@
         <p class="fuente fuente--clara territorio__pie">Fuente: DANE · GEIH 2026 T1 · marco 2018 · muestra 6.207 personas · elaboración Cifra País · actualizado 13-jul-2026</p>
       </article>
 
-      <article class="territorio" id="t-valle-del-cauca" data-busca="valle del cauca" aria-labelledby="t-valle-del-cauca-titulo">
+      <article class="territorio" role="listitem" id="t-valle-del-cauca" data-desempleo="9.9" data-informalidad="53.6" data-ocupacion="59.0" data-brecha="22.7" data-ingreso="2052073" data-busca="valle del cauca" aria-labelledby="t-valle-del-cauca-titulo">
         <header class="territorio__cabeza">
           <h3 class="territorio__nombre" id="t-valle-del-cauca-titulo">Valle del Cauca</h3>
           <p class="territorio__masa">
@@ -3800,7 +3780,7 @@
         <p class="fuente fuente--clara territorio__pie">Fuente: DANE · GEIH 2026 T1 · marco 2018 · muestra 9.934 personas · elaboración Cifra País · actualizado 13-jul-2026</p>
       </article>
 
-      <article class="territorio" id="t-vaupes" data-busca="vaupes" aria-labelledby="t-vaupes-titulo">
+      <article class="territorio" role="listitem" id="t-vaupes" data-desempleo="9.8" data-informalidad="42.0" data-ocupacion="50.7" data-brecha="12.1" data-ingreso="2611479" data-busca="vaupes" aria-labelledby="t-vaupes-titulo">
         <header class="territorio__cabeza">
           <h3 class="territorio__nombre" id="t-vaupes-titulo">Vaupés</h3>
           <p class="territorio__masa">
@@ -3906,7 +3886,7 @@
         <p class="fuente fuente--clara territorio__pie">Fuente: DANE · GEIH 2026 T1 · marco 2018 · muestra 1.442 personas · elaboración Cifra País · actualizado 13-jul-2026</p>
       </article>
 
-      <article class="territorio" id="t-vichada" data-busca="vichada" aria-labelledby="t-vichada-titulo">
+      <article class="territorio" role="listitem" id="t-vichada" data-desempleo="13.3" data-informalidad="62.9" data-ocupacion="59.9" data-brecha="23.6" data-ingreso="1696646" data-busca="vichada" aria-labelledby="t-vichada-titulo">
         <header class="territorio__cabeza">
           <h3 class="territorio__nombre" id="t-vichada-titulo">Vichada</h3>
           <p class="territorio__masa">
@@ -4013,15 +3993,9 @@
       </article>
       </div>
 
-      <div class="carrusel__mandos">
-        <button class="carrusel__flecha" id="terr-antes" type="button">
-          <span aria-hidden="true">←</span> Anterior
-        </button>
-        <p class="carrusel__cuenta" id="terr-cuenta" role="status">—</p>
-        <button class="carrusel__flecha" id="terr-sigue" type="button">
-          Siguiente <span aria-hidden="true">→</span>
-        </button>
-      </div>
+      <p class="radiografia__vacio" id="terr-vacio" hidden role="status">
+        Ningún departamento coincide con esa búsqueda.
+      </p>
     </div>
   </section>
 
@@ -4283,7 +4257,6 @@
               <option value="consultoria">Estudio socioeconómico por encargo</option>
               <option value="monitor">Tablero por suscripción</option>
               <option value="paper">Investigación sectorial o paper</option>
-              <option value="escuela">Formación para el equipo</option>
               <option value="prensa">Consulta de prensa</option>
             </select>
             <p class="campo__error" id="e-asunto" hidden></p>
