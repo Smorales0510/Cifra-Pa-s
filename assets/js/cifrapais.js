@@ -745,14 +745,14 @@
       enviando = true;
       ocupado(true);
 
-      window.location.href = 'mailto:santiago@cifrapais.co'
-        + '?subject=' + encodeURIComponent('Solicitud desde cifrapais.co · ' + form.elements.entidad.value)
+      window.location.href = 'mailto:cifrapais@gmail.com'
+        + '?subject=' + encodeURIComponent('Solicitud desde cifrapais.com · ' + form.elements.entidad.value)
         + '&body=' + encodeURIComponent(cuerpo);
 
       aviso.hidden = false;
       aviso.removeAttribute('data-estado');
       aviso.textContent = 'Se abrió tu cliente de correo con la solicitud lista. '
-        + 'Si no se abrió, escribinos a santiago@cifrapais.co.';
+        + 'Si no se abrió, escribinos a cifrapais@gmail.com.';
 
       // El botón vuelve a la vida: abrir el cliente de correo no navega fuera
       // de la página, así que dejarlo bloqueado impediría un segundo intento.
